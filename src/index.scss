@@ -1,0 +1,191 @@
+@import url("https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Luckiest+Guy&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+
+// FONT VARIABLES
+$font-primary: "Rubik", sans-serif;
+$font-size-primary: 2.4rem;
+$font-weight-primary: 500;
+$letter-spacing: 1px;
+
+// COLLORS
+$font-color-primary: #f3f3f3;
+$font-color-secondary: #292524;
+$color-black: #000;
+$color-white: #fff;
+$color-blue: #a5d8ff;
+
+//Animation
+@keyframes moveInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+@keyframes showUp {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes moveInBotton {
+  0% {
+    opacity: 0;
+    transform: translateY(3rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-size: $font-size-primary;
+  font-family: $font-primary;
+  color: $font-color-primary;
+  font-weight: $font-weight-primary;
+  // background-color: $background-color-primary;
+
+  // position: relative;
+  background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
+    url(body.webp);
+  background-size: cover;
+}
+
+///////////////////////////////////////////////////////////////////////
+%common-input-styles {
+  // background-color: $background-color-primary;
+  color: $font-color-secondary;
+  border: none;
+  border-radius: 10rem;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 1.2rem 2.4rem;
+  font-size: 1.8rem;
+}
+
+///////////////////////////////////////////////////////////////////////
+.button {
+  @extend %common-input-styles;
+  opacity: 1;
+  animation: moveInBotton 0.5s backwards ease-in-out 1s;
+  transition: all 0.3s;
+
+  background-color: $color-blue;
+  // color: $font-color-primary;
+  box-shadow: 0 1rem 2rem rgba($color-black, 0.2);
+
+  &:active {
+    transform: translateY(0.1rem);
+    box-shadow: 0 0.5rem 1rem rgba($color-black, 0.2);
+  }
+}
+
+.app {
+  height: 100vb;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+}
+
+///////////////////////////////////////////////////////////////
+
+.headline {
+  font-size: 4.8rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  font-style: italic;
+  text-align: center;
+  gap: 2.4rem;
+  padding: 2rem 1.2rem;
+  animation: moveInDown 1s ease-in-out;
+}
+
+/////////////////////////////////////////////////////
+
+.add_item {
+  // background-color: $background-color-amber-dark;
+  text-align: center;
+  padding: 3.6rem 0;
+
+  & input,
+  & select {
+    @extend %common-input-styles;
+    opacity: 0;
+    animation: showUp 2s forwards;
+  }
+
+  &__food {
+    width: 46rem;
+  }
+
+  &__container {
+    margin: 2.2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.8rem;
+
+    &--quantity {
+      width: 12rem;
+    }
+
+    &--unit {
+      width: 26rem;
+    }
+    &--who {
+      width: 20rem;
+    }
+
+    /* Zwiększ odstęp między dwoma ostatnimi elementami */
+    & > :nth-last-child(2) {
+      margin-right: 4.6rem; /* lub dowolna wartość, którą chcesz użyć */
+    }
+
+    //
+    &--label {
+      // Visually hidden label for accessibility
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  }
+}
+
+///////////////////////////////////////////////////
+
+.copyright {
+  text-align: center;
+  font-size: 1.6rem;
+  padding: 3.2rem 0;
+  font-weight: 700;
+}
