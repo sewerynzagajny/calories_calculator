@@ -23,14 +23,34 @@ function Button({ style, onClick, children }) {
 
 export default function App() {
   const [foodItems, setFoodItems] = useState([]);
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   function handleAddItems(foodItem) {
     setFoodItems((foodItems) => [...foodItems, foodItem]);
+    console.log(foodItems);
   }
+
+  function handleDeleteItem(id) {
+    setFoodItems((foodItems) => foodItems.filter((item) => item.id !== id));
+  }
+
+  function handleEditItem(id, newFoodItem) {}
+
+  function handleSelectedItem(id) {
+    setSelectedItemId((cur) => (cur === id ? null : id));
+  }
+
   return (
     <div className="app">
       <Headline />
-      <AddItemForm />
+      <AddItemForm onAddItems={handleAddItems} />
+      <FoodItemsList
+        foodItems={foodItems}
+        selectedItemId={selectedItemId}
+        onSelectedItem={handleSelectedItem}
+        onEditItem={handleEditItem}
+        onDeleteItem={handleDeleteItem}
+      />
       <Footer />
     </div>
   );
@@ -44,14 +64,28 @@ function Headline() {
   );
 }
 
-function AddItemForm() {
+function AddItemForm({ onAddItems }) {
   const [food, setFood] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
-  const [who, setWho] = useState("");
+  const [unit, setUnit] = useState(`${units[0].unit}`);
+  const [who, setWho] = useState(`${genderAge[0].gneder}`);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!food) return;
+
+    const id = crypto.randomUUID();
+    const newFoodItem = { id, food, quantity, unit, who };
+    // ;
+    setFood("");
+    setQuantity("");
+    setUnit("g");
+    onAddItems(newFoodItem);
+    console.log(newFoodItem);
+  }
 
   return (
-    <form className="add_item">
+    <form className="add_item" onSubmit={handleSubmit}>
       <input
         id="input-food"
         className="add_item__food"
@@ -105,6 +139,62 @@ function AddItemForm() {
   );
 }
 
+function FoodItemsList({
+  foodItems,
+  selectedItemId,
+  onSelectedItem,
+  onEditItem,
+  onDeleteItem,
+}) {
+  return (
+    <div className="food-items">
+      <div className="food-items__food-list">
+        <ol>
+          {foodItems.map((foodItem) => (
+            <FoodItem
+              foodItem={foodItem}
+              key={foodItem.id}
+              selectedItemId={selectedItemId}
+              onSelectedItem={onSelectedItem}
+              onEdit={onEditItem}
+              onDelete={onDeleteItem}
+            />
+          ))}
+        </ol>
+      </div>
+      <div className="food-items__action">
+        <Button>Szacuj!</Button>
+        <Button>Wyczyść</Button>
+      </div>
+    </div>
+  );
+}
+
+function FoodItem({
+  foodItem,
+  selectedItemId,
+  onSelectedItem,
+  onEdit,
+  onDelete,
+}) {
+  const isSelected = selectedItemId === foodItem.id;
+  return (
+    <li className="food-item" onClick={() => onSelectedItem(foodItem.id)}>
+      <span>
+        {foodItem.quantity.length
+          ? `${foodItem.food} ${foodItem.quantity} ${foodItem.unit}`
+          : `${foodItem.food}`}
+      </span>
+
+      {isSelected && (
+        <div className="food-item__btn">
+          <button onClick={() => onEdit(foodItem.id)}>Edytuj</button>
+          <button onClick={() => onDelete(foodItem.id)}>Usuń</button>
+        </div>
+      )}
+    </li>
+  );
+}
 function Footer() {
   return (
     <footer>

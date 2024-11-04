@@ -26,6 +26,18 @@ $color-blue: #a5d8ff;
   }
 }
 
+@keyframes moveInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
 @keyframes showUp {
   0% {
     opacity: 0;
@@ -135,8 +147,8 @@ body {
   & input,
   & select {
     @extend %common-input-styles;
-    opacity: 0;
-    animation: showUp 2s forwards;
+    opacity: 1;
+    animation: showUp 2s backwards;
   }
 
   &__food {
@@ -181,9 +193,46 @@ body {
   }
 }
 
+///////////////////////////////////////////////////////////////
+
+.food-items {
+  // margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3.2rem;
+
+  &__food-list {
+    width: 80%;
+
+    & ol {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+      gap: 1.8rem;
+      justify-content: center;
+      align-content: space-around;
+      align-items: center;
+      padding-left: 1rem;
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////
+
+.food-item {
+  // justify-self: center;
+
+  &__btn {
+    display: flex;
+    gap: 1.8rem;
+  }
+}
+
 ///////////////////////////////////////////////////
 
 .copyright {
+  animation: showUp 1s ease-in-out;
   text-align: center;
   font-size: 1.6rem;
   padding: 3.2rem 0;
