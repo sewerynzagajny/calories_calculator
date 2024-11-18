@@ -9,12 +9,6 @@ const units = [
   { id: 3, unit: "l" },
 ];
 
-const genderAge = [
-  { id: 0, gneder: "Mężczyzna" },
-  { id: 1, gneder: "Kobieta" },
-  { id: 2, gneder: "Dziecko" },
-];
-
 function Button({ style, onClick, children }) {
   return (
     <button style={style} onClick={onClick} className="button">
@@ -70,7 +64,6 @@ function AddItemForm({ onAddItems }) {
   const [food, setFood] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState(`${units[0].unit}`);
-  const [who, setWho] = useState(`${genderAge[0].gneder}`);
   const inputRef = useRef(null);
 
   function handleSubmit(e) {
@@ -78,7 +71,7 @@ function AddItemForm({ onAddItems }) {
     if (!food) return;
 
     const id = crypto.randomUUID();
-    const newFoodItem = { id, food, quantity, unit, who };
+    const newFoodItem = { id, food, quantity, unit };
     // ;
     setFood("");
     setQuantity("");
@@ -137,7 +130,7 @@ function AddItemForm({ onAddItems }) {
         </label>
         <select
           id="item-select-unit"
-          className="add_item__container--select-unit"
+          className="add_item__container--unit"
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
         >
@@ -147,20 +140,9 @@ function AddItemForm({ onAddItems }) {
             </option>
           ))}
         </select>
-        <select
-          id="item-select-who"
-          className="add_item__container--select-who"
-          value={who}
-          onChange={(e) => setWho(e.target.value)}
-        >
-          {genderAge.map((el) => (
-            <option value={el.gneder} key={el.id}>
-              {el.gneder}
-            </option>
-          ))}
-        </select>
+
+        <Button style={{ width: "10%" }}>Dodaj</Button>
       </div>
-      <Button style={{ width: "12%" }}>Dodaj</Button>
     </form>
   );
 }
@@ -172,6 +154,14 @@ function FoodItemsList({
   onEditItem,
   onDeleteItem,
 }) {
+  const [showButtons, setShowButtons] = useState(false);
+
+  useEffect(() => {
+    foodItems.length
+      ? setShowButtons(true)
+      : setTimeout(() => setShowButtons(false), 250);
+  }, [foodItems.length]);
+
   return (
     <div className="food-items">
       <div className="food-items__food-list">
@@ -188,10 +178,28 @@ function FoodItemsList({
           ))}
         </ol>
       </div>
-      <div className="food-items__action">
-        <Button>Szacuj!</Button>
-        <Button>Wyczyść</Button>
-      </div>
+      {showButtons && (
+        <div
+          className={`food-items__action ${
+            !foodItems.length ? "move-out" : ""
+          }`}
+        >
+          <Button
+            style={{
+              animation: "moveInBotton 0.5s backwards ease-in-out 0.5s",
+            }}
+          >
+            Szacuj!
+          </Button>
+          <Button
+            style={{
+              animation: "moveInBotton 0.5s backwards ease-in-out 0.5s",
+            }}
+          >
+            Usuń listę
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

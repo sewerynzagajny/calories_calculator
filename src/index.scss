@@ -53,6 +53,18 @@ $color-blue: #a5d8ff;
   }
 }
 
+@keyframes moveOutButton {
+  0% {
+    opacity: 1;
+    transform: translate(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(3rem);
+  }
+}
+
 @keyframes moveInBotton {
   0% {
     opacity: 0;
@@ -122,6 +134,10 @@ body {
   animation: showUp 0.3s ease-in-out;
 }
 
+.move-out {
+  animation: moveOutButton 0.3s ease-in-out;
+}
+
 .app {
   height: 100vb;
   margin: 0 auto;
@@ -172,15 +188,15 @@ body {
     }
 
     &--unit {
-      width: 26rem;
+      width: 10rem;
     }
-    &--who {
-      width: 20rem;
-    }
+    // &--who {
+    //   width: 20rem;
+    // }
 
     /* Zwiększ odstęp między dwoma ostatnimi elementami */
     & > :nth-last-child(2) {
-      margin-right: 4.6rem; /* lub dowolna wartość, którą chcesz użyć */
+      margin-right: 5.8rem; /* lub dowolna wartość, którą chcesz użyć */
     }
 
     //
@@ -201,25 +217,37 @@ body {
 ///////////////////////////////////////////////////////////////
 
 .food-items {
-  // margin: 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  // justify-content: space-between;
   align-items: center;
-  gap: 3.2rem;
+  gap: 2.4rem;
+  // height: 100vh;
 
   &__food-list {
     width: 30%;
+    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    max-height: 20vh;
+  }
 
-    & ol {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
-      gap: 1.8rem;
-      justify-content: center;
-      align-content: space-around;
-      align-items: center;
-      padding-left: 1rem;
-    }
+  & ol {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: 1.8rem;
+    justify-content: center;
+    // align-content: space-around;
+    align-items: center;
+    padding-left: 4rem;
+    cursor: pointer;
+  }
+
+  &__action {
+    display: flex;
+    justify-content: center;
+    gap: 1.8rem;
   }
 }
 
