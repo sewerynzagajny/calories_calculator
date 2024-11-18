@@ -5,6 +5,7 @@ $font-primary: "Rubik", sans-serif;
 $font-size-primary: 2.4rem;
 $font-weight-primary: 500;
 $letter-spacing: 1px;
+$font-strong: 700;
 
 // COLLORS
 $font-color-primary: #f3f3f3;
@@ -117,6 +118,10 @@ body {
   }
 }
 
+.animated {
+  animation: showUp 0.3s ease-in-out;
+}
+
 .app {
   height: 100vb;
   margin: 0 auto;
@@ -204,7 +209,7 @@ body {
   gap: 3.2rem;
 
   &__food-list {
-    width: 80%;
+    width: 30%;
 
     & ol {
       display: grid;
@@ -223,6 +228,11 @@ body {
 .food-item {
   // justify-self: center;
 
+  &__quantity,
+  &__unit {
+    font-weight: $font-strong;
+    font-style: italic;
+  }
   &__btn {
     display: flex;
     gap: 1.8rem;

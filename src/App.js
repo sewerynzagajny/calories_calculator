@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useRef } from "react";
+import { useEffect } from "react";
 
 const units = [
   { id: 0, unit: "g" },
@@ -69,6 +71,7 @@ function AddItemForm({ onAddItems }) {
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState(`${units[0].unit}`);
   const [who, setWho] = useState(`${genderAge[0].gneder}`);
+  const inputRef = useRef(null);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -84,6 +87,27 @@ function AddItemForm({ onAddItems }) {
     console.log(newFoodItem);
   }
 
+  function handleKeyDown(e) {
+    const charCode = e.keyCode || e.which;
+    if (
+      (charCode >= 48 && charCode <= 57) ||
+      (charCode >= 96 && charCode <= 105)
+    ) {
+      e.preventDefault();
+      alert("Wipisz ilość w innym polu!");
+      inputRef.current.blur();
+    }
+  }
+
+  function handleQuantity(e) {
+    const value = e.target.value;
+    if (value > 0) {
+      setQuantity(value);
+    } else {
+      setQuantity("");
+    }
+  }
+
   return (
     <form className="add_item" onSubmit={handleSubmit}>
       <input
@@ -93,6 +117,8 @@ function AddItemForm({ onAddItems }) {
         placeholder="Danie lub składnik"
         value={food}
         onChange={(e) => setFood(e.target.value)}
+        onKeyDown={handleKeyDown}
+        ref={inputRef}
       />
       <div className="add_item__container">
         <input
@@ -101,7 +127,7 @@ function AddItemForm({ onAddItems }) {
           type="number"
           placeholder="Ilość"
           value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
+          onChange={handleQuantity}
         />
         <label
           className="add_item__container--label"
@@ -178,13 +204,32 @@ function FoodItem({
   onDelete,
 }) {
   const isSelected = selectedItemId === foodItem.id;
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    if (elementRef.current) {
+      elementRef.current.classList.add("animated");
+    }
+  }, []);
+
   return (
-    <li className="food-item" onClick={() => onSelectedItem(foodItem.id)}>
-      <span>
-        {foodItem.quantity.length
-          ? `${foodItem.food} ${foodItem.quantity} ${foodItem.unit}`
-          : `${foodItem.food}`}
-      </span>
+    <li
+      ref={elementRef}
+      className="food-item"
+      onClick={() => onSelectedItem(foodItem.id)}
+    >
+      {foodItem.quantity.length ? (
+        <>
+          {foodItem.food}:
+          <span className="food-item__quantity">
+            {" "}
+            {foodItem.quantity} <span className="food-item__unit"></span>
+            {foodItem.unit}
+          </span>
+        </>
+      ) : (
+        <span>{foodItem.food}</span>
+      )}
 
       {isSelected && (
         <div className="food-item__btn">
