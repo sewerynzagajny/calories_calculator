@@ -20,6 +20,10 @@ function Button({ style, onClick, children }) {
 export default function App() {
   const [foodItems, setFoodItems] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [showButtons, setShowButtons] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const elementRef = useRef(null);
 
   function handleAddItems(foodItem) {
     setFoodItems((foodItems) => [...foodItems, foodItem]);
@@ -36,6 +40,40 @@ export default function App() {
     setSelectedItemId((cur) => (cur === id ? null : id));
   }
 
+  function handleClearList() {
+    const confirmed = window.confirm(
+      "Czy na pewno chcesz usunąć listę składników?"
+    );
+    if (confirmed) {
+      setFoodItems([]);
+    }
+  }
+
+  useEffect(() => {
+    const storedFoodItems = localStorage.getItem("foodItems");
+    if (storedFoodItems) {
+      setFoodItems(JSON.parse(storedFoodItems));
+      setShowButtons(true);
+    }
+    setDataLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (dataLoaded) {
+      if (foodItems.length > 0) {
+        localStorage.setItem("foodItems", JSON.stringify(foodItems));
+        setShowButtons(true);
+      } else {
+        localStorage.removeItem("foodItems");
+        setTimeout(() => {
+          if (foodItems.length === 0) {
+            setShowButtons(false);
+          }
+        }, 270);
+      }
+    }
+  }, [foodItems, dataLoaded]);
+
   return (
     <div className="app">
       <Headline />
@@ -46,6 +84,11 @@ export default function App() {
         onSelectedItem={handleSelectedItem}
         onEditItem={handleEditItem}
         onDeleteItem={handleDeleteItem}
+        onClearList={handleClearList}
+        showButtons={showButtons}
+        cursorPosition={cursorPosition}
+        onCursorPosition={setCursorPosition}
+        elementRef={elementRef}
       />
       <Footer />
     </div>
@@ -141,7 +184,7 @@ function AddItemForm({ onAddItems }) {
           ))}
         </select>
 
-        <Button style={{ width: "10%" }}>Dodaj</Button>
+        <Button style={{ width: "12rem" }}>Dodaj</Button>
       </div>
     </form>
   );
@@ -153,30 +196,57 @@ function FoodItemsList({
   onSelectedItem,
   onEditItem,
   onDeleteItem,
+  onClearList,
+  showButtons,
+  cursorPosition,
+  onCursorPosition,
+  elementRef,
 }) {
-  const [showButtons, setShowButtons] = useState(false);
+  // useEffect(() => {
+  //   function handleClickOutside(e) {
+  //     if (
+  //       elementRef.current &&
+  //       !elementRef.current.contains(e.target) &&
+  //       !e.target.classList.contains("food-item__btn--edit") &&
+  //       !e.target.classList.contains("food-item__btn--delete")
+  //     ) {
+  //       onSelectedItem(null);
+  //     }
+  //   }
 
-  useEffect(() => {
-    foodItems.length
-      ? setShowButtons(true)
-      : setTimeout(() => setShowButtons(false), 250);
-  }, [foodItems.length]);
+  //   function handleEscKey(e) {
+  //     if (e.key === "Escape") {
+  //       onSelectedItem(null);
+  //     }
+  //   }
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   document.addEventListener("keydown", handleEscKey);
+
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //     document.removeEventListener("keydown", handleEscKey);
+  //   };
+  // }, [onSelectedItem, elementRef]);
 
   return (
     <div className="food-items">
       <div className="food-items__food-list">
-        <ol>
-          {foodItems.map((foodItem) => (
+        <ul>
+          {foodItems.map((foodItem, numItem) => (
             <FoodItem
               foodItem={foodItem}
+              numItem={numItem}
               key={foodItem.id}
               selectedItemId={selectedItemId}
               onSelectedItem={onSelectedItem}
               onEdit={onEditItem}
               onDelete={onDeleteItem}
+              cursorPosition={cursorPosition}
+              onCursorPosition={onCursorPosition}
+              elementRef={elementRef}
             />
           ))}
-        </ol>
+        </ul>
       </div>
       {showButtons && (
         <div
@@ -195,6 +265,7 @@ function FoodItemsList({
             style={{
               animation: "moveInBotton 0.5s backwards ease-in-out 0.5s",
             }}
+            onClick={onClearList}
           >
             Usuń listę
           </Button>
@@ -206,43 +277,65 @@ function FoodItemsList({
 
 function FoodItem({
   foodItem,
+  numItem,
   selectedItemId,
   onSelectedItem,
   onEdit,
   onDelete,
+  cursorPosition,
+  onCursorPosition,
+  elementRef,
 }) {
   const isSelected = selectedItemId === foodItem.id;
-  const elementRef = useRef(null);
 
   useEffect(() => {
     if (elementRef.current) {
       elementRef.current.classList.add("animated");
     }
-  }, []);
+  }, [elementRef]);
+
+  function handleClickItem(e) {
+    onSelectedItem(foodItem.id);
+    onCursorPosition({ x: e.clientX, y: e.clientY });
+  }
 
   return (
-    <li
-      ref={elementRef}
-      className="food-item"
-      onClick={() => onSelectedItem(foodItem.id)}
-    >
-      {foodItem.quantity.length ? (
-        <>
-          {foodItem.food}:
-          <span className="food-item__quantity">
-            {" "}
-            {foodItem.quantity} <span className="food-item__unit"></span>
-            {foodItem.unit}
-          </span>
-        </>
-      ) : (
-        <span>{foodItem.food}</span>
-      )}
+    <li className="food-item">
+      <span ref={elementRef} onClick={handleClickItem}>
+        {foodItem.quantity.length ? (
+          <>
+            <span className="food-item__number">{numItem + 1}. </span>
+            <span>{foodItem.food}: </span>
+            <span className="food-item__quantity">
+              {foodItem.quantity}{" "}
+              <span className="food-item__unit">{foodItem.unit}</span>
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="food-item__number">{numItem + 1}. </span>
+            <span>{foodItem.food}</span>
+          </>
+        )}
+      </span>
 
       {isSelected && (
-        <div className="food-item__btn">
-          <button onClick={() => onEdit(foodItem.id)}>Edytuj</button>
-          <button onClick={() => onDelete(foodItem.id)}>Usuń</button>
+        <div
+          className="food-item__btn"
+          style={{ top: cursorPosition.y, left: cursorPosition.x }}
+        >
+          <button
+            className="food-item__btn--edit"
+            onClick={() => onEdit(foodItem.id)}
+          >
+            Edytuj
+          </button>
+          <button
+            className="food-item__btn--delete"
+            onClick={() => onDelete(foodItem.id)}
+          >
+            Usuń
+          </button>
         </div>
       )}
     </li>

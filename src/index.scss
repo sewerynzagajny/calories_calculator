@@ -161,9 +161,14 @@ body {
 /////////////////////////////////////////////////////
 
 .add_item {
-  // background-color: $background-color-amber-dark;
-  text-align: center;
-  padding: 3.6rem 0;
+  // text-align: center; //small-scr
+  // padding: 3.6rem 0;   //small-scr
+  padding-bottom: 1.2rem;
+
+  display: flex; //big-scr
+  justify-content: center; //big-scr
+  align-items: center; //big-scr
+  gap: 1.8rem; //big-scr
 
   & input,
   & select {
@@ -174,21 +179,24 @@ body {
 
   &__food {
     width: 46rem;
+    height: 4.8rem; //big-scr
   }
 
   &__container {
     margin: 2.2rem 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.8rem;
+    display: flex; //small-scr
+    // justify-content: center; //small-scr
+    // align-items: center; //small-scr
+    gap: 1.8rem; //small-scr
 
     &--quantity {
       width: 12rem;
+      height: 4.8rem; //big-scr
     }
 
     &--unit {
       width: 10rem;
+      height: 4.8rem; //big-scr
     }
     // &--who {
     //   width: 20rem;
@@ -221,27 +229,36 @@ body {
   flex-direction: column;
   // justify-content: space-between;
   align-items: center;
-  gap: 2.4rem;
-  // height: 100vh;
+  gap: 1.2rem;
+  // gap: 2.4rem; //small-scr
 
   &__food-list {
-    width: 30%;
+    // width: 30%; //small-scr
+    width: 92rem;
     overflow: scroll;
     overflow-y: auto;
     overflow-x: hidden;
     flex: 1;
-    max-height: 20vh;
+    max-height: 24vh;
+    margin-bottom: 0.8rem;
   }
 
-  & ol {
+  & ul {
+    list-style: none;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    // grid-template-columns: repeat(auto-fit, minmax(90rem, 1fr)); //small-scr
+    grid-template-columns: repeat(auto-fit, minmax(62rem, 1fr));
     gap: 1.8rem;
     justify-content: center;
     // align-content: space-around;
     align-items: center;
-    padding-left: 4rem;
-    cursor: pointer;
+    margin-left: 1rem;
+
+    & li {
+      & span {
+        cursor: pointer;
+      }
+    }
   }
 
   &__action {
@@ -256,12 +273,19 @@ body {
 .food-item {
   // justify-self: center;
 
+  &__number {
+    margin-right: 0.3rem;
+  }
+
   &__quantity,
   &__unit {
     font-weight: $font-strong;
     font-style: italic;
   }
   &__btn {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
     display: flex;
     gap: 1.8rem;
   }
