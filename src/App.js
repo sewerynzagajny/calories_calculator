@@ -163,6 +163,7 @@ export default function App() {
           itemToEdit={itemToEdit}
           setItemToEdit={setItemToEdit}
           onCancelEdit={handleCancelEdit}
+          setSelectedItemId={setSelectedItemId}
         />
       )}
     </div>
@@ -322,7 +323,6 @@ function FoodItem({
   cursorPosition,
   onCursorPosition,
   popupVisible,
-  setPopupVisible,
 }) {
   const isSelected = selectedItemId === foodItem.id;
   const elementRef = useRef(null);
@@ -345,15 +345,15 @@ function FoodItem({
         !e.target.classList.contains("food-item__btn--action") &&
         !elementRef.current.contains(e.target)
       ) {
-        onSelectedItem(null);
-        setPopupVisible(false);
+        if (!popupVisible) {
+          onSelectedItem(null);
+        }
       }
     }
 
     function handleEscKey(e) {
       if (e.key === "Escape") {
         onSelectedItem(null);
-        setPopupVisible(false);
       }
     }
 
@@ -364,7 +364,7 @@ function FoodItem({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [onSelectedItem, setPopupVisible]);
+  }, [onSelectedItem]);
 
   return (
     <li className={`food-item ${isSelected ? "selected" : ""}`}>
@@ -435,14 +435,48 @@ function Popup({
   itemToEdit,
   setItemToEdit,
   onCancelEdit,
+  setSelectedItemId,
 }) {
+  const popupRef = useRef(null);
+
   function handleSubmit(e) {
     e.preventDefault();
     setPopupVisible(null);
   }
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (
+        popupRef.current &&
+        !e.target.classList.contains("popup__content") &&
+        !popupRef.current.contains(e.target)
+      ) {
+        setSelectedItemId(null);
+        setPopupVisible(false);
+      }
+    }
+
+    function handleEscKey(e) {
+      if (e.key === "Escape") {
+        setSelectedItemId(null);
+        setPopupVisible(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [setSelectedItemId, setPopupVisible]);
   return (
     <div className="popup">
-      <div className="popup__content" style={{ top: `${cursorPosition.y}px` }}>
+      <div
+        ref={popupRef}
+        className="popup__content"
+        style={{ top: `${cursorPosition.y}px` }}
+      >
         <form className="popup__content--edit_item" onSubmit={handleSubmit}>
           <input
             id="input-food"
@@ -461,7 +495,7 @@ function Popup({
               type="number"
               placeholder="Ilość"
               value={itemToEdit.quantity}
-              onChange={onQuantity}
+              onChange={(e) => setItemToEdit(e.target.value)}
             />
             <label
               className="popup__content--edit_item__container--label"
@@ -492,6 +526,7 @@ function Popup({
               Anuluj
             </Button>
             <Button
+              type="submit"
               className="popup__content--btn"
               style={{
                 width: "12rem",
