@@ -23,7 +23,14 @@ export default function App() {
   const [showButtons, setShowButtons] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const elementRef = useRef(null);
+  const [popupVisible, setPopupVisible] = useState(false);
+
+  const [food, setFood] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [unit, setUnit] = useState(`${units[0].unit}`);
+  const inputRef = useRef(null);
+
+  const [itemToEdit, setItemToEdit] = useState(null);
 
   function handleAddItems(foodItem) {
     setFoodItems((foodItems) => [...foodItems, foodItem]);
@@ -32,9 +39,15 @@ export default function App() {
 
   function handleDeleteItem(id) {
     setFoodItems((foodItems) => foodItems.filter((item) => item.id !== id));
+    setSelectedItemId(null);
   }
 
-  function handleEditItem(id, newFoodItem) {}
+  function handleEditItem(id, e) {
+    const item = foodItems.find((item) => item.id === id);
+    setItemToEdit(item);
+    setCursorPosition({ x: 0, y: e.clientY });
+    setPopupVisible(true);
+  }
 
   function handleSelectedItem(id) {
     setSelectedItemId((cur) => (cur === id ? null : id));
@@ -47,6 +60,36 @@ export default function App() {
     if (confirmed) {
       setFoodItems([]);
     }
+  }
+
+  function handleKeyDown(e) {
+    const charCode = e.keyCode || e.which;
+    if (
+      (charCode >= 48 && charCode <= 57) ||
+      (charCode >= 96 && charCode <= 105)
+    ) {
+      e.preventDefault();
+      alert("Wipisz ilość w innym polu!");
+      inputRef.current.blur();
+    }
+  }
+
+  function handleQuantity(e) {
+    const value = e.target.value;
+    if (value > 0) {
+      setQuantity(value);
+    } else {
+      setQuantity("");
+    }
+  }
+
+  function handleSaveEdit() {
+    setPopupVisible(false);
+  }
+
+  function handleCancelEdit() {
+    setPopupVisible(false);
+    setSelectedItemId(null);
   }
 
   useEffect(() => {
@@ -77,7 +120,18 @@ export default function App() {
   return (
     <div className="app">
       <Headline />
-      <AddItemForm onAddItems={handleAddItems} />
+      <AddItemForm
+        onAddItems={handleAddItems}
+        onKeyDown={handleKeyDown}
+        onQuantity={handleQuantity}
+        food={food}
+        setFood={setFood}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        unit={unit}
+        setUnit={setUnit}
+        inputRef={inputRef}
+      />
       <FoodItemsList
         foodItems={foodItems}
         selectedItemId={selectedItemId}
@@ -88,9 +142,29 @@ export default function App() {
         showButtons={showButtons}
         cursorPosition={cursorPosition}
         onCursorPosition={setCursorPosition}
-        elementRef={elementRef}
+        popupVisible={popupVisible}
+        setPopupVisible={setPopupVisible}
       />
       <Footer />
+      {popupVisible && (
+        <Popup
+          onAddItems={handleAddItems}
+          onKeyDown={handleKeyDown}
+          onQuantity={handleQuantity}
+          food={food}
+          setFood={setFood}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          unit={unit}
+          setUnit={setUnit}
+          inputRef={inputRef}
+          setPopupVisible={setPopupVisible}
+          cursorPosition={cursorPosition}
+          itemToEdit={itemToEdit}
+          setItemToEdit={setItemToEdit}
+          onCancelEdit={handleCancelEdit}
+        />
+      )}
     </div>
   );
 }
@@ -103,12 +177,18 @@ function Headline() {
   );
 }
 
-function AddItemForm({ onAddItems }) {
-  const [food, setFood] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState(`${units[0].unit}`);
-  const inputRef = useRef(null);
-
+function AddItemForm({
+  onAddItems,
+  onKeyDown,
+  onQuantity,
+  food,
+  setFood,
+  setQuantity,
+  quantity,
+  unit,
+  setUnit,
+  inputRef,
+}) {
   function handleSubmit(e) {
     e.preventDefault();
     if (!food) return;
@@ -123,27 +203,6 @@ function AddItemForm({ onAddItems }) {
     console.log(newFoodItem);
   }
 
-  function handleKeyDown(e) {
-    const charCode = e.keyCode || e.which;
-    if (
-      (charCode >= 48 && charCode <= 57) ||
-      (charCode >= 96 && charCode <= 105)
-    ) {
-      e.preventDefault();
-      alert("Wipisz ilość w innym polu!");
-      inputRef.current.blur();
-    }
-  }
-
-  function handleQuantity(e) {
-    const value = e.target.value;
-    if (value > 0) {
-      setQuantity(value);
-    } else {
-      setQuantity("");
-    }
-  }
-
   return (
     <form className="add_item" onSubmit={handleSubmit}>
       <input
@@ -153,7 +212,7 @@ function AddItemForm({ onAddItems }) {
         placeholder="Danie lub składnik"
         value={food}
         onChange={(e) => setFood(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyDown={onKeyDown}
         ref={inputRef}
       />
       <div className="add_item__container">
@@ -163,7 +222,7 @@ function AddItemForm({ onAddItems }) {
           type="number"
           placeholder="Ilość"
           value={quantity}
-          onChange={handleQuantity}
+          onChange={onQuantity}
         />
         <label
           className="add_item__container--label"
@@ -200,38 +259,15 @@ function FoodItemsList({
   showButtons,
   cursorPosition,
   onCursorPosition,
-  elementRef,
+  popupVisible,
+  setPopupVisible,
 }) {
-  // useEffect(() => {
-  //   function handleClickOutside(e) {
-  //     if (
-  //       elementRef.current &&
-  //       !elementRef.current.contains(e.target) &&
-  //       !e.target.classList.contains("food-item__btn--edit") &&
-  //       !e.target.classList.contains("food-item__btn--delete")
-  //     ) {
-  //       onSelectedItem(null);
-  //     }
-  //   }
-
-  //   function handleEscKey(e) {
-  //     if (e.key === "Escape") {
-  //       onSelectedItem(null);
-  //     }
-  //   }
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   document.addEventListener("keydown", handleEscKey);
-
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //     document.removeEventListener("keydown", handleEscKey);
-  //   };
-  // }, [onSelectedItem, elementRef]);
+  const hasSelectedItem = selectedItemId !== null;
 
   return (
     <div className="food-items">
       <div className="food-items__food-list">
-        <ul>
+        <ul className={hasSelectedItem ? "has-selected-item" : ""}>
           {foodItems.map((foodItem, numItem) => (
             <FoodItem
               foodItem={foodItem}
@@ -243,7 +279,8 @@ function FoodItemsList({
               onDelete={onDeleteItem}
               cursorPosition={cursorPosition}
               onCursorPosition={onCursorPosition}
-              elementRef={elementRef}
+              popupVisible={popupVisible}
+              setPopupVisible={setPopupVisible}
             />
           ))}
         </ul>
@@ -284,23 +321,53 @@ function FoodItem({
   onDelete,
   cursorPosition,
   onCursorPosition,
-  elementRef,
+  popupVisible,
+  setPopupVisible,
 }) {
   const isSelected = selectedItemId === foodItem.id;
-
-  useEffect(() => {
-    if (elementRef.current) {
-      elementRef.current.classList.add("animated");
-    }
-  }, [elementRef]);
+  const elementRef = useRef(null);
 
   function handleClickItem(e) {
     onSelectedItem(foodItem.id);
     onCursorPosition({ x: e.clientX, y: e.clientY });
   }
 
+  useEffect(() => {
+    if (elementRef.current) {
+      elementRef.current.classList.add("animated");
+    }
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (
+        elementRef.current &&
+        !e.target.classList.contains("food-item__btn--action") &&
+        !elementRef.current.contains(e.target)
+      ) {
+        onSelectedItem(null);
+        setPopupVisible(false);
+      }
+    }
+
+    function handleEscKey(e) {
+      if (e.key === "Escape") {
+        onSelectedItem(null);
+        setPopupVisible(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [onSelectedItem, setPopupVisible]);
+
   return (
-    <li className="food-item">
+    <li className={`food-item ${isSelected ? "selected" : ""}`}>
       <span ref={elementRef} onClick={handleClickItem}>
         {foodItem.quantity.length ? (
           <>
@@ -319,19 +386,19 @@ function FoodItem({
         )}
       </span>
 
-      {isSelected && (
+      {isSelected && !popupVisible && (
         <div
           className="food-item__btn"
           style={{ top: cursorPosition.y, left: cursorPosition.x }}
         >
           <button
-            className="food-item__btn--edit"
-            onClick={() => onEdit(foodItem.id)}
+            className="food-item__btn--action"
+            onClick={(e) => onEdit(foodItem.id, e)}
           >
             Edytuj
           </button>
           <button
-            className="food-item__btn--delete"
+            className="food-item__btn--action"
             onClick={() => onDelete(foodItem.id)}
           >
             Usuń
@@ -350,5 +417,92 @@ function Footer() {
         All rights reserved.
       </p>
     </footer>
+  );
+}
+
+function Popup({
+  onKeyDown,
+  onQuantity,
+  food,
+  setFood,
+  setQuantity,
+  quantity,
+  unit,
+  setUnit,
+  inputRef,
+  setPopupVisible,
+  cursorPosition,
+  itemToEdit,
+  setItemToEdit,
+  onCancelEdit,
+}) {
+  function handleSubmit(e) {
+    e.preventDefault();
+    setPopupVisible(null);
+  }
+  return (
+    <div className="popup">
+      <div className="popup__content" style={{ top: `${cursorPosition.y}px` }}>
+        <form className="popup__content--edit_item" onSubmit={handleSubmit}>
+          <input
+            id="input-food"
+            className="popup__content--edit_item__food"
+            type="text"
+            placeholder="Danie lub składnik"
+            value={itemToEdit.food}
+            onChange={(e) => setItemToEdit(e.target.value)}
+            onKeyDown={onKeyDown}
+            ref={inputRef}
+          />
+          <div className="popup__content--edit_item__container">
+            <input
+              id="input-quantity"
+              className="popup__content--edit_item__container--quantity"
+              type="number"
+              placeholder="Ilość"
+              value={itemToEdit.quantity}
+              onChange={onQuantity}
+            />
+            <label
+              className="popup__content--edit_item__container--label"
+              htmlFor="item-select-unit"
+            >
+              Wybierz jednostkę:
+            </label>
+            <select
+              id="item-select-unit"
+              className="popup__content--edit_item__container--unit"
+              value={itemToEdit.unit}
+              onChange={(e) => setUnit(e.target.value)}
+            >
+              {units.map((el) => (
+                <option value={el.unit} key={el.id}>
+                  {el.unit}
+                </option>
+              ))}
+            </select>
+            <Button
+              onClick={onCancelEdit}
+              className="popup__content--btn"
+              style={{
+                width: "12rem",
+                animation: "none",
+              }}
+            >
+              Anuluj
+            </Button>
+            <Button
+              className="popup__content--btn"
+              style={{
+                width: "12rem",
+                animation: "none",
+              }}
+            >
+              Zapisz
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
