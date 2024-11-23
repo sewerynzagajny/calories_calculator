@@ -33,6 +33,8 @@ export default function App() {
   const [itemToEdit, setItemToEdit] = useState(null);
   const [originalItem, setOriginalItem] = useState(null);
 
+  const [isCheck, setIsCheck] = useState(false);
+
   function handleAddItems(foodItem) {
     setFoodItems((foodItems) => [...foodItems, foodItem]);
     console.log(foodItems);
@@ -92,6 +94,22 @@ export default function App() {
     }
   }
 
+  const handleClick = () => {
+    const input = inputRef.current;
+    if (input) {
+      const length = input.value.length;
+      input.setSelectionRange(length, length);
+      input.scrollLeft = input.scrollWidth;
+    }
+    setTimeout(() => {
+      setIsCheck(true);
+    }, 1);
+  };
+
+  const handleFocus = () => {
+    setIsCheck(false);
+  };
+
   useEffect(() => {
     const storedFoodItems = localStorage.getItem("foodItems");
     if (storedFoodItems) {
@@ -131,6 +149,9 @@ export default function App() {
         unit={unit}
         setUnit={setUnit}
         inputRef={inputRef}
+        isCheck={isCheck}
+        onClick={handleClick}
+        onFocus={handleFocus}
       />
       <FoodItemsList
         foodItems={foodItems}
@@ -158,6 +179,10 @@ export default function App() {
           onUpdateItem={handleUpdateItem}
           originalItem={originalItem}
           setOriginalItem={setOriginalItem}
+          isCheck={isCheck}
+          onClick={handleClick}
+          onFocus={handleFocus}
+          inputRef={inputRef}
         />
       )}
     </div>
@@ -183,9 +208,10 @@ function AddItemForm({
   unit,
   setUnit,
   inputRef,
+  isCheck,
+  onClick,
+  onFocus,
 }) {
-  const [isCheck, setIsCheck] = useState(false);
-
   function handleSubmit(e) {
     e.preventDefault();
     if (!food) return;
@@ -200,22 +226,6 @@ function AddItemForm({
     console.log(newFoodItem);
   }
 
-  const handleClick = () => {
-    const input = inputRef.current;
-    if (input) {
-      const length = input.value.length;
-      input.setSelectionRange(length, length);
-      input.scrollLeft = input.scrollWidth;
-    }
-    setTimeout(() => {
-      setIsCheck(true);
-    }, 1);
-  };
-
-  const handleFocus = () => {
-    setIsCheck(false);
-  };
-
   return (
     <form className="add_item" onSubmit={handleSubmit}>
       <input
@@ -227,8 +237,8 @@ function AddItemForm({
         onChange={(e) => setFood(e.target.value)}
         onKeyDown={onKeyDown}
         ref={inputRef}
-        {...(!isCheck && { onClick: handleClick })}
-        onFocus={handleFocus}
+        {...(!isCheck && { onClick: onClick })}
+        onFocus={onFocus}
       />
       <div className="add_item__container">
         <input
@@ -444,6 +454,10 @@ function Popup({
   onUpdateItem,
   originalItem,
   setOriginalItem,
+  isCheck,
+  onClick,
+  onFocus,
+  inputRef,
 }) {
   const popupRef = useRef(null);
 
@@ -516,6 +530,9 @@ function Popup({
               setItemToEdit({ ...itemToEdit, food: e.target.value })
             }
             onKeyDown={onKeyDown}
+            ref={inputRef}
+            {...(!isCheck && { onClick: onClick })}
+            onFocus={onFocus}
           />
           <div className="popup__content--edit_item__container">
             <input
