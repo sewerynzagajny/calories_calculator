@@ -9,9 +9,9 @@ const units = [
   { id: 3, unit: "l" },
 ];
 
-function Button({ style, onClick, children }) {
+function Button({ type, style, onClick, children }) {
   return (
-    <button style={style} onClick={onClick} className="button">
+    <button type={type} style={style} onClick={onClick} className="button">
       {children}
     </button>
   );
@@ -31,9 +31,17 @@ export default function App() {
   const inputRef = useRef(null);
 
   const [itemToEdit, setItemToEdit] = useState(null);
+  const [originalItem, setOriginalItem] = useState(null);
 
   function handleAddItems(foodItem) {
     setFoodItems((foodItems) => [...foodItems, foodItem]);
+    console.log(foodItems);
+  }
+
+  function handleUpdateItem(updatedItem) {
+    setFoodItems((foodItems) =>
+      foodItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
     console.log(foodItems);
   }
 
@@ -47,6 +55,7 @@ export default function App() {
     setItemToEdit(item);
     setCursorPosition({ x: 0, y: e.clientY });
     setPopupVisible(true);
+    setOriginalItem({ ...item });
   }
 
   function handleSelectedItem(id) {
@@ -81,15 +90,6 @@ export default function App() {
     } else {
       setQuantity("");
     }
-  }
-
-  function handleSaveEdit() {
-    setPopupVisible(false);
-  }
-
-  function handleCancelEdit() {
-    setPopupVisible(false);
-    setSelectedItemId(null);
   }
 
   useEffect(() => {
@@ -150,20 +150,14 @@ export default function App() {
         <Popup
           onAddItems={handleAddItems}
           onKeyDown={handleKeyDown}
-          onQuantity={handleQuantity}
-          food={food}
-          setFood={setFood}
-          quantity={quantity}
-          setQuantity={setQuantity}
-          unit={unit}
-          setUnit={setUnit}
-          inputRef={inputRef}
           setPopupVisible={setPopupVisible}
           cursorPosition={cursorPosition}
           itemToEdit={itemToEdit}
           setItemToEdit={setItemToEdit}
-          onCancelEdit={handleCancelEdit}
           setSelectedItemId={setSelectedItemId}
+          onUpdateItem={handleUpdateItem}
+          originalItem={originalItem}
+          setOriginalItem={setOriginalItem}
         />
       )}
     </div>
@@ -190,6 +184,8 @@ function AddItemForm({
   setUnit,
   inputRef,
 }) {
+  const [isCheck, setIsCheck] = useState(false);
+
   function handleSubmit(e) {
     e.preventDefault();
     if (!food) return;
@@ -204,6 +200,22 @@ function AddItemForm({
     console.log(newFoodItem);
   }
 
+  const handleClick = () => {
+    const input = inputRef.current;
+    if (input) {
+      const length = input.value.length;
+      input.setSelectionRange(length, length);
+      input.scrollLeft = input.scrollWidth;
+    }
+    setTimeout(() => {
+      setIsCheck(true);
+    }, 1);
+  };
+
+  const handleFocus = () => {
+    setIsCheck(false);
+  };
+
   return (
     <form className="add_item" onSubmit={handleSubmit}>
       <input
@@ -215,6 +227,8 @@ function AddItemForm({
         onChange={(e) => setFood(e.target.value)}
         onKeyDown={onKeyDown}
         ref={inputRef}
+        {...(!isCheck && { onClick: handleClick })}
+        onFocus={handleFocus}
       />
       <div className="add_item__container">
         <input
@@ -364,7 +378,7 @@ function FoodItem({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [onSelectedItem]);
+  }, [onSelectedItem, popupVisible]);
 
   return (
     <li className={`food-item ${isSelected ? "selected" : ""}`}>
@@ -422,26 +436,39 @@ function Footer() {
 
 function Popup({
   onKeyDown,
-  onQuantity,
-  food,
-  setFood,
-  setQuantity,
-  quantity,
-  unit,
-  setUnit,
-  inputRef,
   setPopupVisible,
   cursorPosition,
   itemToEdit,
   setItemToEdit,
-  onCancelEdit,
   setSelectedItemId,
+  onUpdateItem,
+  originalItem,
+  setOriginalItem,
 }) {
   const popupRef = useRef(null);
 
+  function handleCancelEdit() {
+    setPopupVisible(false);
+    setSelectedItemId(null);
+  }
+
+  function isItemUnchanged(originalItem, editedItem) {
+    return JSON.stringify(originalItem) === JSON.stringify(editedItem);
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
-    setPopupVisible(null);
+    setPopupVisible(false);
+    setSelectedItemId(null);
+
+    if (isItemUnchanged(originalItem, itemToEdit)) {
+      console.log("Item has not been changed.");
+      return;
+    }
+    const updatedItem = { ...itemToEdit };
+    onUpdateItem(updatedItem);
+    setOriginalItem(null);
+    console.log(updatedItem);
   }
   useEffect(() => {
     function handleClickOutside(e) {
@@ -470,6 +497,7 @@ function Popup({
       document.removeEventListener("keydown", handleEscKey);
     };
   }, [setSelectedItemId, setPopupVisible]);
+
   return (
     <div className="popup">
       <div
@@ -484,9 +512,10 @@ function Popup({
             type="text"
             placeholder="Danie lub składnik"
             value={itemToEdit.food}
-            onChange={(e) => setItemToEdit(e.target.value)}
+            onChange={(e) =>
+              setItemToEdit({ ...itemToEdit, food: e.target.value })
+            }
             onKeyDown={onKeyDown}
-            ref={inputRef}
           />
           <div className="popup__content--edit_item__container">
             <input
@@ -495,7 +524,9 @@ function Popup({
               type="number"
               placeholder="Ilość"
               value={itemToEdit.quantity}
-              onChange={(e) => setItemToEdit(e.target.value)}
+              onChange={(e) =>
+                setItemToEdit({ ...itemToEdit, quantity: e.target.value })
+              }
             />
             <label
               className="popup__content--edit_item__container--label"
@@ -507,7 +538,9 @@ function Popup({
               id="item-select-unit"
               className="popup__content--edit_item__container--unit"
               value={itemToEdit.unit}
-              onChange={(e) => setUnit(e.target.value)}
+              onChange={(e) =>
+                setItemToEdit({ ...itemToEdit, unit: e.target.value })
+              }
             >
               {units.map((el) => (
                 <option value={el.unit} key={el.id}>
@@ -516,7 +549,8 @@ function Popup({
               ))}
             </select>
             <Button
-              onClick={onCancelEdit}
+              type="button"
+              onClick={handleCancelEdit}
               className="popup__content--btn"
               style={{
                 width: "12rem",
