@@ -35,6 +35,21 @@ export default function App() {
 
   const [isCheck, setIsCheck] = useState(false);
 
+  // const [kcalItems, setKcalItems] = useState([]);
+
+  const kcalItems = [
+    {
+      id: 0,
+      food: "Kotlet schabowy: 200 g, ziemniaki gotowane: 180 g, buraczki zasmażane z cebulą: 90 g",
+      kcal: 570,
+      fat: 23,
+      carbohydrates: 52,
+      protein: 13,
+    },
+    // { id: 1, food: "Mleko", kcal: 42, fat: 1, carbs: 5, protein: 3 },
+    // { id: 2, food: "Chleb", kcal: 250, fat: 1, carbs: 5, protein: 3 },
+  ];
+
   function handleAddItems(foodItem) {
     setFoodItems((foodItems) => [...foodItems, foodItem]);
     console.log(foodItems);
@@ -166,6 +181,7 @@ export default function App() {
         popupVisible={popupVisible}
         setPopupVisible={setPopupVisible}
       />
+      <KcalOutputList kcalItems={kcalItems} />
       <Footer />
       {popupVisible && (
         <Popup
@@ -214,10 +230,15 @@ function AddItemForm({
 }) {
   function handleSubmit(e) {
     e.preventDefault();
-    if (!food) return;
+    if (!food || !quantity) return alert("Wypełnij własciwie wszystkie pola!");
 
     const id = crypto.randomUUID();
-    const newFoodItem = { id, food, quantity, unit };
+    const newFoodItem = {
+      id,
+      food,
+      quantity,
+      unit,
+    };
     // ;
     setFood("");
     setQuantity("");
@@ -396,7 +417,9 @@ function FoodItem({
         {foodItem.quantity.length ? (
           <>
             <span className="food-item__number">{numItem + 1}. </span>
-            <span>{foodItem.food}: </span>
+            <span>
+              {foodItem.food[0].toUpperCase() + foodItem.food.slice(1)}:{" "}
+            </span>
             <span className="food-item__quantity">
               {foodItem.quantity}{" "}
               <span className="food-item__unit">{foodItem.unit}</span>
@@ -432,10 +455,57 @@ function FoodItem({
     </li>
   );
 }
+
+function KcalOutputList({ kcalItems }) {
+  return (
+    <div className="kcal-items">
+      <div className="kcal-items__kcal-list">
+        <ul>
+          {kcalItems
+            .map((kcalItem) => (
+              <KcalOutputLItem kcalItem={kcalItem} key={kcalItem.id} />
+            ))
+            .reverse()}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function KcalOutputLItem({ kcalItem }) {
+  return (
+    <li className="kcal-item">
+      <ul>
+        <li>
+          <span className="kcal-item__food">{kcalItem.food}</span>
+        </li>
+        <li>
+          <span className="kcal-item__food">
+            {" "}
+            Kalorie: {kcalItem.kcal} kcal
+          </span>
+        </li>
+        <li>
+          <span className="kcal-item__food">Tłuszcze: {kcalItem.fat} g</span>
+        </li>
+        <li>
+          <span className="kcal-item__food">
+            Węglowodany: {kcalItem.carbohydrates} g
+          </span>
+        </li>
+        <li>
+          <span className="kcal-item__food">Białko: {kcalItem.protein} g</span>
+        </li>
+      </ul>
+    </li>
+  );
+}
+
 function Footer() {
   return (
-    <footer>
-      <p className="copyright">
+    <footer className="copyright">
+      <p>Aplikacja wykorzystuje OpenAI.</p>
+      <p>
         Copyright &copy; <span>{new Date().getFullYear()}</span> by Seweryn
         Zagajny. <br />
         All rights reserved.
@@ -472,6 +542,9 @@ function Popup({
 
   function handleSubmit(e) {
     e.preventDefault();
+    if (!itemToEdit.food || !itemToEdit.quantity)
+      return alert("Wypełnij poprawnie wszystkie pola!");
+
     setPopupVisible(false);
     setSelectedItemId(null);
 

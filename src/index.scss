@@ -330,6 +330,52 @@ body {
 }
 /////////////////////////////////////////////////////
 
+.kcal-items {
+  display: flex;
+  flex-direction: column;
+  // justify-content: space-between;
+  align-items: center;
+  gap: 1.2rem;
+  // gap: 2.4rem; //small-scr
+
+  &__kcal-list {
+    // width: 30%; //small-scr
+    width: 92rem;
+    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    max-height: 24vh;
+    margin-bottom: 0.8rem;
+  }
+
+  & ul {
+    list-style: none;
+    display: grid;
+    // grid-template-columns: repeat(auto-fit, minmax(90rem, 1fr)); //small-scr
+    grid-template-columns: repeat(auto-fit, minmax(62rem, 1fr));
+    gap: 1.8rem;
+    justify-content: center;
+    // align-content: space-around;
+    align-items: center;
+    margin-left: 1rem;
+
+    & li {
+      & span {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &__action {
+    display: flex;
+    justify-content: center;
+    gap: 1.8rem;
+  }
+}
+
+/////////////////////////////////////////////////////
+
 .popup {
   position: fixed;
   background-color: rgb(0, 0, 0, 0.3);
@@ -364,6 +410,6 @@ body {
   animation: showUp 1s ease-in-out;
   text-align: center;
   font-size: 1.6rem;
-  padding: 3.2rem 0;
+  padding: 1.2rem 0;
   font-weight: 700;
 }
