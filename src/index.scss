@@ -245,11 +245,11 @@ body {
   &__food-list {
     // width: 30%; //small-scr
     width: 92rem;
-    overflow: scroll;
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex: 1;
-    max-height: 24vh;
+    // overflow: scroll;
+    // overflow-y: auto;
+    // overflow-x: hidden;
+    // flex: 1;
+    // max-height: 24vh;
     margin-bottom: 0.8rem;
   }
 
@@ -344,8 +344,8 @@ body {
     overflow: scroll;
     overflow-y: auto;
     overflow-x: hidden;
-    flex: 1;
-    max-height: 24vh;
+    // flex: 1;
+    // max-height: 24vh;
     margin-bottom: 0.8rem;
   }
 

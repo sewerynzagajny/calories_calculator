@@ -167,7 +167,9 @@ export default function App() {
         isCheck={isCheck}
         onClick={handleClick}
         onFocus={handleFocus}
+        setShowButtons={setShowButtons}
       />
+
       <FoodItemsList
         foodItems={foodItems}
         selectedItemId={selectedItemId}
@@ -180,8 +182,10 @@ export default function App() {
         onCursorPosition={setCursorPosition}
         popupVisible={popupVisible}
         setPopupVisible={setPopupVisible}
+        setShowButtons={setShowButtons}
       />
-      <KcalOutputList kcalItems={kcalItems} />
+
+      {/* <KcalOutputList kcalItems={kcalItems} /> */}
       <Footer />
       {popupVisible && (
         <Popup
@@ -199,6 +203,7 @@ export default function App() {
           onClick={handleClick}
           onFocus={handleFocus}
           inputRef={inputRef}
+          setShowButtons={setShowButtons}
         />
       )}
     </div>
@@ -227,6 +232,7 @@ function AddItemForm({
   isCheck,
   onClick,
   onFocus,
+  setShowButtons,
 }) {
   function handleSubmit(e) {
     e.preventDefault();
@@ -240,11 +246,15 @@ function AddItemForm({
       unit,
     };
     // ;
+    setShowButtons(false);
     setFood("");
     setQuantity("");
     setUnit("g");
     onAddItems(newFoodItem);
     console.log(newFoodItem);
+    setTimeout(() => {
+      setShowButtons(true);
+    }, 1);
   }
 
   return (
@@ -307,12 +317,16 @@ function FoodItemsList({
   onCursorPosition,
   popupVisible,
   setPopupVisible,
+  setShowButtons,
 }) {
   const hasSelectedItem = selectedItemId !== null;
 
   return (
     <div className="food-items">
-      <div className="food-items__food-list">
+      <div
+        className="food-items__food-list"
+        style={foodItems.length === 0 ? { maxHeight: "4vh", flex: 1 } : {}}
+      >
         <ul className={hasSelectedItem ? "has-selected-item" : ""}>
           {foodItems.map((foodItem, numItem) => (
             <FoodItem
@@ -327,6 +341,8 @@ function FoodItemsList({
               onCursorPosition={onCursorPosition}
               popupVisible={popupVisible}
               setPopupVisible={setPopupVisible}
+              setShowButtons={setShowButtons}
+              foodItems={foodItems}
             />
           ))}
         </ul>
@@ -339,14 +355,14 @@ function FoodItemsList({
         >
           <Button
             style={{
-              animation: "moveInBotton 0.5s backwards ease-in-out 0.5s",
+              animation: "moveInBotton 0.5s backwards ease-in-out",
             }}
           >
             Szacuj!
           </Button>
           <Button
             style={{
-              animation: "moveInBotton 0.5s backwards ease-in-out 0.5s",
+              animation: "moveInBotton 0.5s backwards ease-in-out",
             }}
             onClick={onClearList}
           >
@@ -368,6 +384,8 @@ function FoodItem({
   cursorPosition,
   onCursorPosition,
   popupVisible,
+  setShowButtons,
+  foodItems,
 }) {
   const isSelected = selectedItemId === foodItem.id;
   const elementRef = useRef(null);
@@ -375,6 +393,15 @@ function FoodItem({
   function handleClickItem(e) {
     onSelectedItem(foodItem.id);
     onCursorPosition({ x: e.clientX, y: e.clientY });
+  }
+
+  function handleDeleteItemEffect() {
+    onDelete(foodItem.id);
+    if (foodItems.length === 1) return;
+    setShowButtons(false);
+    setTimeout(() => {
+      setShowButtons(true);
+    }, 1);
   }
 
   useEffect(() => {
@@ -446,7 +473,7 @@ function FoodItem({
           </button>
           <button
             className="food-item__btn--action"
-            onClick={() => onDelete(foodItem.id)}
+            onClick={handleDeleteItemEffect}
           >
             Usuń
           </button>
