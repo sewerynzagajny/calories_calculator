@@ -206,10 +206,10 @@ body {
 }
 
 .app {
-  height: 100vb;
+  // height: 100vb;
   margin: 0 auto;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto auto;
   position: relative;
 }
 
@@ -412,4 +412,5 @@ body {
   font-size: 1.6rem;
   padding: 1.2rem 0;
   font-weight: 700;
+  flex: 1;
 }

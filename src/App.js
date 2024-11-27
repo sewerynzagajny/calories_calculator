@@ -34,8 +34,11 @@ export default function App() {
   const [originalItem, setOriginalItem] = useState(null);
 
   const [isCheck, setIsCheck] = useState(false);
+  const [containerHeight, setContainerHeight] = useState("auto");
 
   // const [kcalItems, setKcalItems] = useState([]);
+
+  const container = document.querySelector(".food-items__food-list");
 
   const kcalItems = [
     {
@@ -65,6 +68,12 @@ export default function App() {
   function handleDeleteItem(id) {
     setFoodItems((foodItems) => foodItems.filter((item) => item.id !== id));
     setSelectedItemId(null);
+    if (foodItems.length === 1) {
+      setContainerHeight(container.offsetHeight + "px");
+      setTimeout(() => {
+        setContainerHeight("auto");
+      }, 270);
+    }
   }
 
   function handleEditItem(id, e) {
@@ -84,7 +93,11 @@ export default function App() {
       "Czy na pewno chcesz usunąć listę składników?"
     );
     if (confirmed) {
+      setContainerHeight(container.offsetHeight + "px");
       setFoodItems([]);
+      setTimeout(() => {
+        setContainerHeight("auto");
+      }, 270);
     }
   }
 
@@ -183,9 +196,10 @@ export default function App() {
         popupVisible={popupVisible}
         setPopupVisible={setPopupVisible}
         setShowButtons={setShowButtons}
+        containerHeight={containerHeight}
       />
 
-      {/* <KcalOutputList kcalItems={kcalItems} /> */}
+      <KcalOutputList kcalItems={kcalItems} />
       <Footer />
       {popupVisible && (
         <Popup
@@ -318,6 +332,7 @@ function FoodItemsList({
   popupVisible,
   setPopupVisible,
   setShowButtons,
+  containerHeight,
 }) {
   const hasSelectedItem = selectedItemId !== null;
 
@@ -325,7 +340,8 @@ function FoodItemsList({
     <div className="food-items">
       <div
         className="food-items__food-list"
-        style={foodItems.length === 0 ? { maxHeight: "4vh", flex: 1 } : {}}
+        style={{ height: containerHeight }}
+        // style={foodItems.length === 0 ? { maxHeight: "4vh", flex: 1 } : {}}
       >
         <ul className={hasSelectedItem ? "has-selected-item" : ""}>
           {foodItems.map((foodItem, numItem) => (
@@ -417,7 +433,7 @@ function FoodItem({
         !e.target.classList.contains("food-item__btn--action") &&
         !elementRef.current.contains(e.target)
       ) {
-        if (!popupVisible) {
+        if (!popupVisible && isSelected) {
           onSelectedItem(null);
         }
       }
@@ -436,7 +452,7 @@ function FoodItem({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [onSelectedItem, popupVisible]);
+  }, [onSelectedItem, popupVisible, isSelected]);
 
   return (
     <li className={`food-item ${isSelected ? "selected" : ""}`}>
@@ -500,32 +516,32 @@ function KcalOutputList({ kcalItems }) {
 }
 
 function KcalOutputLItem({ kcalItem }) {
-  return (
-    <li className="kcal-item">
-      <ul>
-        <li>
-          <span className="kcal-item__food">{kcalItem.food}</span>
-        </li>
-        <li>
-          <span className="kcal-item__food">
-            {" "}
-            Kalorie: {kcalItem.kcal} kcal
-          </span>
-        </li>
-        <li>
-          <span className="kcal-item__food">Tłuszcze: {kcalItem.fat} g</span>
-        </li>
-        <li>
-          <span className="kcal-item__food">
-            Węglowodany: {kcalItem.carbohydrates} g
-          </span>
-        </li>
-        <li>
-          <span className="kcal-item__food">Białko: {kcalItem.protein} g</span>
-        </li>
-      </ul>
-    </li>
-  );
+  // return (
+  //   <li className="kcal-item">
+  //     <ul>
+  //       <li>
+  //         <span className="kcal-item__food">{kcalItem.food}</span>
+  //       </li>
+  //       <li>
+  //         <span className="kcal-item__food">
+  //           {" "}
+  //           Kalorie: {kcalItem.kcal} kcal
+  //         </span>
+  //       </li>
+  //       <li>
+  //         <span className="kcal-item__food">Tłuszcze: {kcalItem.fat} g</span>
+  //       </li>
+  //       <li>
+  //         <span className="kcal-item__food">
+  //           Węglowodany: {kcalItem.carbohydrates} g
+  //         </span>
+  //       </li>
+  //       <li>
+  //         <span className="kcal-item__food">Białko: {kcalItem.protein} g</span>
+  //       </li>
+  //     </ul>
+  //   </li>
+  // );
 }
 
 function Footer() {
