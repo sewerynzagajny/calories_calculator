@@ -255,7 +255,7 @@ function AddItemForm({
     const id = crypto.randomUUID();
     const newFoodItem = {
       id,
-      food,
+      food: food[0].toUpperCase() + food.slice(1),
       quantity,
       unit,
     };
@@ -408,7 +408,7 @@ function FoodItem({
 
   function handleClickItem(e) {
     onSelectedItem(foodItem.id);
-    onCursorPosition({ x: e.clientX, y: e.clientY });
+    onCursorPosition({ x: e.clientX, y: e.clientY + window.scrollY });
   }
 
   function handleDeleteItemEffect() {
@@ -460,9 +460,7 @@ function FoodItem({
         {foodItem.quantity.length ? (
           <>
             <span className="food-item__number">{numItem + 1}. </span>
-            <span>
-              {foodItem.food[0].toUpperCase() + foodItem.food.slice(1)}:{" "}
-            </span>
+            <span>{foodItem.food}: </span>
             <span className="food-item__quantity">
               {foodItem.quantity}{" "}
               <span className="food-item__unit">{foodItem.unit}</span>
@@ -516,32 +514,32 @@ function KcalOutputList({ kcalItems }) {
 }
 
 function KcalOutputLItem({ kcalItem }) {
-  // return (
-  //   <li className="kcal-item">
-  //     <ul>
-  //       <li>
-  //         <span className="kcal-item__food">{kcalItem.food}</span>
-  //       </li>
-  //       <li>
-  //         <span className="kcal-item__food">
-  //           {" "}
-  //           Kalorie: {kcalItem.kcal} kcal
-  //         </span>
-  //       </li>
-  //       <li>
-  //         <span className="kcal-item__food">Tłuszcze: {kcalItem.fat} g</span>
-  //       </li>
-  //       <li>
-  //         <span className="kcal-item__food">
-  //           Węglowodany: {kcalItem.carbohydrates} g
-  //         </span>
-  //       </li>
-  //       <li>
-  //         <span className="kcal-item__food">Białko: {kcalItem.protein} g</span>
-  //       </li>
-  //     </ul>
-  //   </li>
-  // );
+  return (
+    <li className="kcal-item">
+      <ul>
+        <li>
+          <span className="kcal-item__food">{kcalItem.food}</span>
+        </li>
+        <li>
+          <span className="kcal-item__food">
+            {" "}
+            Kalorie: {kcalItem.kcal} kcal
+          </span>
+        </li>
+        <li>
+          <span className="kcal-item__food">Tłuszcze: {kcalItem.fat} g</span>
+        </li>
+        <li>
+          <span className="kcal-item__food">
+            Węglowodany: {kcalItem.carbohydrates} g
+          </span>
+        </li>
+        <li>
+          <span className="kcal-item__food">Białko: {kcalItem.protein} g</span>
+        </li>
+      </ul>
+    </li>
+  );
 }
 
 function Footer() {
@@ -595,7 +593,10 @@ function Popup({
       console.log("Item has not been changed.");
       return;
     }
-    const updatedItem = { ...itemToEdit };
+    const updatedItem = {
+      ...itemToEdit,
+      food: itemToEdit.food[0].toUpperCase() + itemToEdit.food.slice(1),
+    };
     onUpdateItem(updatedItem);
     setOriginalItem(null);
     console.log(updatedItem);

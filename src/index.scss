@@ -206,10 +206,10 @@ body {
 }
 
 .app {
-  // height: 100vb;
+  min-height: 100vh;
   margin: 0 auto;
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-rows: auto auto auto 1fr auto;
   position: relative;
 }
 
@@ -240,6 +240,7 @@ body {
   // justify-content: space-between;
   align-items: center;
   gap: 1.2rem;
+  margin-bottom: 2.4rem;
   // gap: 2.4rem; //small-scr
 
   &__food-list {
