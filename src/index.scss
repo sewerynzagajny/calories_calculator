@@ -200,9 +200,19 @@ body {
 .animated {
   animation: showUp 0.3s ease-in-out;
 }
+.long-animated {
+  animation: showUp 1s ease-in-out;
+}
 
 .move-out {
   animation: moveOutButton 0.3s ease-in-out;
+}
+.move-in {
+  animation: moveInBotton 0.5s backwards ease-in-out;
+}
+
+.button-delayed {
+  animation: moveInBotton 0.5s backwards ease-in-out 1s;
 }
 
 .app {

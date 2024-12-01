@@ -197,9 +197,14 @@ export default function App() {
         setPopupVisible={setPopupVisible}
         setShowButtons={setShowButtons}
         containerHeight={containerHeight}
+        dataLoaded={dataLoaded}
       />
 
-      <KcalOutputList kcalItems={kcalItems} />
+      <KcalOutputList
+        kcalItems={kcalItems}
+        foodItems={foodItems}
+        dataLoaded={dataLoaded}
+      />
       <Footer />
       {popupVisible && (
         <Popup
@@ -333,8 +338,15 @@ function FoodItemsList({
   setPopupVisible,
   setShowButtons,
   containerHeight,
+  dataLoaded,
 }) {
   const hasSelectedItem = selectedItemId !== null;
+  const elementRef = useRef(null);
+  useEffect(() => {
+    if (dataLoaded) {
+      elementRef.current.classList.add("long-animated");
+    }
+  }, [dataLoaded]);
 
   return (
     <div className="food-items">
@@ -343,7 +355,10 @@ function FoodItemsList({
         style={{ height: containerHeight }}
         // style={foodItems.length === 0 ? { maxHeight: "4vh", flex: 1 } : {}}
       >
-        <ul className={hasSelectedItem ? "has-selected-item" : ""}>
+        <ul
+          ref={elementRef}
+          className={hasSelectedItem ? "has-selected-item" : ""}
+        >
           {foodItems.map((foodItem, numItem) => (
             <FoodItem
               foodItem={foodItem}
@@ -497,7 +512,27 @@ function FoodItem({
   );
 }
 
-function KcalOutputList({ kcalItems }) {
+function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
+  useEffect(() => {
+    const elements = document.querySelectorAll(".kcal-item");
+    if (foodItems.length === 0)
+      elements.forEach((element) => {
+        element.classList.add("long-animated");
+        const timer = setTimeout(() => {
+          element.classList.remove("long-animated");
+        }, 1300);
+        return () => clearTimeout(timer);
+      });
+    else {
+      elements.forEach((element) => {
+        element.classList.add("animated");
+        const timer = setTimeout(() => {
+          element.classList.remove("animated");
+        }, 300);
+        return () => clearTimeout(timer);
+      });
+    }
+  }, [foodItems, dataLoaded]);
   return (
     <div className="kcal-items">
       <div className="kcal-items__kcal-list">
