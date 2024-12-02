@@ -18,6 +18,7 @@ function Button({ type, style, onClick, children }) {
 }
 
 export default function App() {
+  const [delayedVisibility, setDelayedVisibility] = useState(false);
   const [foodItems, setFoodItems] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [showButtons, setShowButtons] = useState(false);
@@ -55,14 +56,12 @@ export default function App() {
 
   function handleAddItems(foodItem) {
     setFoodItems((foodItems) => [...foodItems, foodItem]);
-    console.log(foodItems);
   }
 
   function handleUpdateItem(updatedItem) {
     setFoodItems((foodItems) =>
       foodItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
-    console.log(foodItems);
   }
 
   function handleDeleteItem(id) {
@@ -139,6 +138,12 @@ export default function App() {
   };
 
   useEffect(() => {
+    setTimeout(() => {
+      setDelayedVisibility(true);
+    }, 10);
+  }, []);
+
+  useEffect(() => {
     const storedFoodItems = localStorage.getItem("foodItems");
     if (storedFoodItems) {
       setFoodItems(JSON.parse(storedFoodItems));
@@ -165,65 +170,69 @@ export default function App() {
 
   return (
     <div className="app">
-      <Headline />
-      <AddItemForm
-        onAddItems={handleAddItems}
-        onKeyDown={handleKeyDown}
-        onQuantity={handleQuantity}
-        food={food}
-        setFood={setFood}
-        quantity={quantity}
-        setQuantity={setQuantity}
-        unit={unit}
-        setUnit={setUnit}
-        inputRef={inputRef}
-        isCheck={isCheck}
-        onClick={handleClick}
-        onFocus={handleFocus}
-        setShowButtons={setShowButtons}
-      />
+      {delayedVisibility && (
+        <>
+          <Headline />
+          <AddItemForm
+            onAddItems={handleAddItems}
+            onKeyDown={handleKeyDown}
+            onQuantity={handleQuantity}
+            food={food}
+            setFood={setFood}
+            quantity={quantity}
+            setQuantity={setQuantity}
+            unit={unit}
+            setUnit={setUnit}
+            inputRef={inputRef}
+            isCheck={isCheck}
+            onClick={handleClick}
+            onFocus={handleFocus}
+            setShowButtons={setShowButtons}
+          />
 
-      <FoodItemsList
-        foodItems={foodItems}
-        selectedItemId={selectedItemId}
-        onSelectedItem={handleSelectedItem}
-        onEditItem={handleEditItem}
-        onDeleteItem={handleDeleteItem}
-        onClearList={handleClearList}
-        showButtons={showButtons}
-        cursorPosition={cursorPosition}
-        onCursorPosition={setCursorPosition}
-        popupVisible={popupVisible}
-        setPopupVisible={setPopupVisible}
-        setShowButtons={setShowButtons}
-        containerHeight={containerHeight}
-        dataLoaded={dataLoaded}
-      />
+          <FoodItemsList
+            foodItems={foodItems}
+            selectedItemId={selectedItemId}
+            onSelectedItem={handleSelectedItem}
+            onEditItem={handleEditItem}
+            onDeleteItem={handleDeleteItem}
+            onClearList={handleClearList}
+            showButtons={showButtons}
+            cursorPosition={cursorPosition}
+            onCursorPosition={setCursorPosition}
+            popupVisible={popupVisible}
+            setPopupVisible={setPopupVisible}
+            setShowButtons={setShowButtons}
+            containerHeight={containerHeight}
+            dataLoaded={dataLoaded}
+          />
 
-      <KcalOutputList
-        kcalItems={kcalItems}
-        foodItems={foodItems}
-        dataLoaded={dataLoaded}
-      />
-      <Footer />
-      {popupVisible && (
-        <Popup
-          onAddItems={handleAddItems}
-          onKeyDown={handleKeyDown}
-          setPopupVisible={setPopupVisible}
-          cursorPosition={cursorPosition}
-          itemToEdit={itemToEdit}
-          setItemToEdit={setItemToEdit}
-          setSelectedItemId={setSelectedItemId}
-          onUpdateItem={handleUpdateItem}
-          originalItem={originalItem}
-          setOriginalItem={setOriginalItem}
-          isCheck={isCheck}
-          onClick={handleClick}
-          onFocus={handleFocus}
-          inputRef={inputRef}
-          setShowButtons={setShowButtons}
-        />
+          <KcalOutputList
+            kcalItems={kcalItems}
+            foodItems={foodItems}
+            dataLoaded={dataLoaded}
+          />
+          <Footer />
+          {popupVisible && (
+            <Popup
+              onAddItems={handleAddItems}
+              onKeyDown={handleKeyDown}
+              setPopupVisible={setPopupVisible}
+              cursorPosition={cursorPosition}
+              itemToEdit={itemToEdit}
+              setItemToEdit={setItemToEdit}
+              setSelectedItemId={setSelectedItemId}
+              onUpdateItem={handleUpdateItem}
+              originalItem={originalItem}
+              setOriginalItem={setOriginalItem}
+              isCheck={isCheck}
+              onClick={handleClick}
+              onFocus={handleFocus}
+              inputRef={inputRef}
+              setShowButtons={setShowButtons}
+            />
+          )}
+        </>
       )}
     </div>
   );
@@ -270,7 +279,6 @@ function AddItemForm({
     setQuantity("");
     setUnit("g");
     onAddItems(newFoodItem);
-    console.log(newFoodItem);
     setTimeout(() => {
       setShowButtons(true);
     }, 1);
@@ -530,7 +538,7 @@ function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
   useEffect(() => {
     const elements = document.querySelectorAll(".kcal-item");
     if (foodItems.length !== prevFoodItemsLength.current) {
-      if (dataLoaded) {
+      if (foodItems.length === 0) {
         elements.forEach((element) => {
           element.classList.add("long-animated");
           const timer = setTimeout(() => {
@@ -550,9 +558,16 @@ function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
     }
     prevFoodItemsLength.current = foodItems.length;
   }, [foodItems, dataLoaded]);
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    if (dataLoaded) {
+      elementRef.current.classList.add("long-animated");
+    }
+  }, [dataLoaded]);
 
   return (
-    <div className="kcal-items">
+    <div ref={elementRef} className="kcal-items">
       <div className="kcal-items__kcal-list">
         <ul>
           {kcalItems
