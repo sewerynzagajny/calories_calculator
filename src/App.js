@@ -340,13 +340,21 @@ function FoodItemsList({
   containerHeight,
   dataLoaded,
 }) {
+  const [showDelayedButton, setShowDelayedButton] = useState(true);
   const hasSelectedItem = selectedItemId !== null;
   const elementRef = useRef(null);
+
   useEffect(() => {
     if (dataLoaded) {
       elementRef.current.classList.add("long-animated");
     }
   }, [dataLoaded]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShowDelayedButton(false);
+    }, 1600);
+  }, []);
 
   return (
     <div className="food-items">
@@ -386,14 +394,18 @@ function FoodItemsList({
         >
           <Button
             style={{
-              animation: "moveInBotton 0.5s backwards ease-in-out",
+              animation: !showDelayedButton
+                ? "moveInBotton 0.5s backwards ease-in-out"
+                : "",
             }}
           >
             Szacuj!
           </Button>
           <Button
             style={{
-              animation: "moveInBotton 0.5s backwards ease-in-out",
+              animation: !showDelayedButton
+                ? "moveInBotton 0.5s backwards ease-in-out"
+                : "",
             }}
             onClick={onClearList}
           >
@@ -513,26 +525,32 @@ function FoodItem({
 }
 
 function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
+  const prevFoodItemsLength = useRef(foodItems.length);
+
   useEffect(() => {
     const elements = document.querySelectorAll(".kcal-item");
-    if (foodItems.length === 0)
-      elements.forEach((element) => {
-        element.classList.add("long-animated");
-        const timer = setTimeout(() => {
-          element.classList.remove("long-animated");
-        }, 1300);
-        return () => clearTimeout(timer);
-      });
-    else {
-      elements.forEach((element) => {
-        element.classList.add("animated");
-        const timer = setTimeout(() => {
-          element.classList.remove("animated");
-        }, 300);
-        return () => clearTimeout(timer);
-      });
+    if (foodItems.length !== prevFoodItemsLength.current) {
+      if (dataLoaded) {
+        elements.forEach((element) => {
+          element.classList.add("long-animated");
+          const timer = setTimeout(() => {
+            element.classList.remove("long-animated");
+          }, 1300);
+          return () => clearTimeout(timer);
+        });
+      } else {
+        elements.forEach((element) => {
+          element.classList.add("animated");
+          const timer = setTimeout(() => {
+            element.classList.remove("animated");
+          }, 300);
+          return () => clearTimeout(timer);
+        });
+      }
     }
+    prevFoodItemsLength.current = foodItems.length;
   }, [foodItems, dataLoaded]);
+
   return (
     <div className="kcal-items">
       <div className="kcal-items__kcal-list">
