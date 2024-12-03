@@ -121,7 +121,7 @@ export default function App() {
     }
   }
 
-  const handleClick = () => {
+  function handleClick() {
     const input = inputRef.current;
     if (input) {
       const length = input.value.length;
@@ -131,11 +131,24 @@ export default function App() {
     setTimeout(() => {
       setIsCheck(true);
     }, 1);
-  };
+  }
 
-  const handleFocus = () => {
+  function handleFocus() {
     setIsCheck(false);
-  };
+  }
+
+  function handleEstimate() {
+    const foodItemString = foodItems
+      .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
+      .join(". ");
+    const estimateText = `Ile kalorii i makrosładniki ma: ${foodItemString}?`;
+    console.log(estimateText);
+    setContainerHeight(container.offsetHeight + "px");
+    setFoodItems([]);
+    setTimeout(() => {
+      setContainerHeight("auto");
+    }, 270);
+  }
 
   useEffect(() => {
     setTimeout(() => {
@@ -205,6 +218,7 @@ export default function App() {
             setShowButtons={setShowButtons}
             containerHeight={containerHeight}
             dataLoaded={dataLoaded}
+            onEstimate={handleEstimate}
           />
 
           <KcalOutputList
@@ -347,6 +361,7 @@ function FoodItemsList({
   setShowButtons,
   containerHeight,
   dataLoaded,
+  onEstimate,
 }) {
   const [showDelayedButton, setShowDelayedButton] = useState(true);
   const hasSelectedItem = selectedItemId !== null;
@@ -406,6 +421,7 @@ function FoodItemsList({
                 ? "moveInBotton 0.5s backwards ease-in-out"
                 : "",
             }}
+            onClick={onEstimate}
           >
             Szacuj!
           </Button>
