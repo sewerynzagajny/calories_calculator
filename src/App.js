@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
+// require("dotenv").config();
 
 const units = [
   { id: 0, unit: "g" },
@@ -37,25 +38,78 @@ export default function App() {
   const [isCheck, setIsCheck] = useState(false);
   const [containerHeight, setContainerHeight] = useState("auto");
 
-  // const [kcalItems, setKcalItems] = useState([]);
+  const [kcalItems, setKcalItems] = useState([]);
 
   const container = document.querySelector(".food-items__food-list");
 
-  const kcalItems = [
-    {
-      id: 0,
-      food: "Kotlet schabowy: 200 g, ziemniaki gotowane: 180 g, buraczki zasmażane z cebulą: 90 g",
-      kcal: 570,
-      fat: 23,
-      carbohydrates: 52,
-      protein: 13,
-    },
-    // { id: 1, food: "Mleko", kcal: 42, fat: 1, carbs: 5, protein: 3 },
-    // { id: 2, food: "Chleb", kcal: 250, fat: 1, carbs: 5, protein: 3 },
-  ];
+  // const kcalItems = [
+  //   {
+  //     id: 0,
+  //     food: "Kotlet schabowy: 200 g, ziemniaki gotowane: 180 g, buraczki zasmażane z cebulą: 90 g",
+  //     kcal: 570,
+  //     fat: 23,
+  //     carbohydrates: 52,
+  //     protein: 13,
+  //   },
+  // ];
+
+  const apiKey = process.env.REACT_APP_API_KEY;
+  const apiURL = "https://api.openai.com/v1/chat/completions";
+
+  function Timeout(s) {
+    return new Promise(function (_, reject) {
+      setTimeout(function () {
+        reject(new Error(`Request took too long! Timeout after ${s} second`));
+      }, s * 1000);
+    });
+  }
+
+  async function AJAX(
+    url,
+    uploadData = undefined,
+    KeyName = undefined,
+    authKey = undefined,
+    contentType = "application/json"
+  ) {
+    try {
+      const headers = { "Content-Type": contentType };
+
+      if (authKey) {
+        headers["Authorization"] = `${KeyName} ${authKey}`;
+      }
+
+      let body;
+      if (uploadData) {
+        if (contentType === "application/json") {
+          body = JSON.stringify(uploadData);
+        } else if (contentType === "application/x-www-form-urlencoded") {
+          body = new URLSearchParams(uploadData).toString();
+        }
+      }
+
+      const fetchPro = fetch(url, {
+        method: uploadData ? "POST" : "GET",
+        headers: headers,
+        body: body,
+      });
+
+      const res = await Promise.race([fetchPro, Timeout(10)]);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(`${data.message} ${res.status}`);
+      return data;
+    } catch (err) {
+      console.error("Error in AJAX function:", err);
+      throw err;
+    }
+  }
 
   function handleAddItems(foodItem) {
     setFoodItems((foodItems) => [...foodItems, foodItem]);
+  }
+
+  function handleAddKcalItems(kcalItem) {
+    setKcalItems((kcalItems) => [...kcalItems, kcalItem]);
   }
 
   function handleUpdateItem(updatedItem) {
@@ -137,17 +191,51 @@ export default function App() {
     setIsCheck(false);
   }
 
-  function handleEstimate() {
+  async function handleEstimate() {
     const foodItemString = foodItems
       .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
       .join(". ");
-    const estimateText = `Ile kalorii i makrosładniki ma: ${foodItemString}?`;
-    console.log(estimateText);
-    setContainerHeight(container.offsetHeight + "px");
-    setFoodItems([]);
-    setTimeout(() => {
-      setContainerHeight("auto");
-    }, 270);
+    const estimateText = `Oszacuj kaloryczność i makroskładniki be dla: ${foodItemString}. Zwróć wynik bez żadnych opisów i komentarzy tylko w formacie JSON z kluczami: calories, protein, fat, carbohydrates.`;
+
+    const dataInput = {
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: "Jesteś pomocnym asystentem." },
+        { role: "user", content: estimateText },
+      ],
+      max_tokens: 200,
+      temperature: 0.7,
+    };
+
+    try {
+      const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
+      const output = response.choices[0].message.content;
+      const dataOutput = JSON.parse(output);
+      console.log("API Response:", dataOutput);
+      const id = crypto.randomUUID();
+      const newKcalItem = {
+        id,
+        food: foodItemString,
+        calories: dataOutput.calories,
+        fat: dataOutput.fat,
+        carbohydrates: dataOutput.carbohydrates,
+        protein: dataOutput.protein,
+      };
+
+      const confirmed = window.confirm(
+        "Czy po oszacowaniu kcal usunąć listę składników?"
+      );
+      if (confirmed) {
+        setContainerHeight(container.offsetHeight + "px");
+        setFoodItems([]);
+        setTimeout(() => {
+          setContainerHeight("auto");
+        }, 270);
+      }
+      handleAddKcalItems(newKcalItem);
+    } catch (error) {
+      console.error("Error fetching estimate:", error);
+    }
   }
 
   useEffect(() => {
@@ -607,7 +695,7 @@ function KcalOutputLItem({ kcalItem }) {
         <li>
           <span className="kcal-item__food">
             {" "}
-            Kalorie: {kcalItem.kcal} kcal
+            Kalorie: {kcalItem.calories} kcal
           </span>
         </li>
         <li>
