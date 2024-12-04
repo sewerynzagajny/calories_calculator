@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
-// require("dotenv").config();
 
 const units = [
   { id: 0, unit: "g" },
@@ -39,8 +38,10 @@ export default function App() {
   const [containerHeight, setContainerHeight] = useState("auto");
 
   const [kcalItems, setKcalItems] = useState([]);
+  const [dataKcalLoaded, setDataKcalLoaded] = useState(false);
 
-  const container = document.querySelector(".food-items__food-list");
+  // const container = document.querySelector(".food-items__food-list");
+  // const containerRef = useRef(null);
 
   // const kcalItems = [
   //   {
@@ -119,6 +120,7 @@ export default function App() {
   }
 
   function handleDeleteItem(id) {
+    const container = document.querySelector(".food-items__food-list");
     setFoodItems((foodItems) => foodItems.filter((item) => item.id !== id));
     setSelectedItemId(null);
     if (foodItems.length === 1) {
@@ -142,6 +144,7 @@ export default function App() {
   }
 
   function handleClearList() {
+    const container = document.querySelector(".food-items__food-list");
     const confirmed = window.confirm(
       "Czy na pewno chcesz usunąć listę składników?"
     );
@@ -192,10 +195,11 @@ export default function App() {
   }
 
   async function handleEstimate() {
+    const container = document.querySelector(".food-items__food-list");
     const foodItemString = foodItems
       .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
       .join(". ");
-    const estimateText = `Oszacuj kaloryczność i makroskładniki be dla: ${foodItemString}. Zwróć wynik bez żadnych opisów i komentarzy tylko w formacie JSON z kluczami: calories, protein, fat, carbohydrates.`;
+    const estimateText = `Oszacuj kaloryczność i makroskładniki dla: ${foodItemString}. Zwróć wynik bez żadnych opisów i komentarzy tylko w formacie JSON z kluczami: calories, protein, fat, carbohydrates.`;
 
     const dataInput = {
       model: "gpt-3.5-turbo",
@@ -211,7 +215,6 @@ export default function App() {
       const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
       const output = response.choices[0].message.content;
       const dataOutput = JSON.parse(output);
-      console.log("API Response:", dataOutput);
       const id = crypto.randomUUID();
       const newKcalItem = {
         id,
@@ -222,17 +225,15 @@ export default function App() {
         protein: dataOutput.protein,
       };
 
-      const confirmed = window.confirm(
-        "Czy po oszacowaniu kcal usunąć listę składników?"
-      );
-      if (confirmed) {
-        setContainerHeight(container.offsetHeight + "px");
-        setFoodItems([]);
-        setTimeout(() => {
-          setContainerHeight("auto");
-        }, 270);
-      }
+      // if (containerRef.current) {
+      //   setContainerHeight(containerRef.current.offsetHeight + "px");
+      // }
       handleAddKcalItems(newKcalItem);
+      setContainerHeight(container.offsetHeight + "px");
+      setFoodItems([]);
+      setTimeout(() => {
+        setContainerHeight("auto");
+      }, 270);
     } catch (error) {
       console.error("Error fetching estimate:", error);
     }
@@ -268,6 +269,22 @@ export default function App() {
       }
     }
   }, [foodItems, dataLoaded]);
+
+  useEffect(() => {
+    const storedKcalItems = localStorage.getItem("kcalItems");
+    if (storedKcalItems) {
+      setKcalItems(JSON.parse(storedKcalItems));
+    }
+    setDataKcalLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (dataKcalLoaded) {
+      localStorage.setItem("kcalItems", JSON.stringify(kcalItems));
+    } else {
+      localStorage.removeItem("kcalItems");
+    }
+  }, [kcalItems, dataKcalLoaded]);
 
   return (
     <div className="app">
