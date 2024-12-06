@@ -223,6 +223,11 @@ body {
   }
 }
 
+.button--loading {
+  opacity: 0.5 !important;
+  pointer-events: none;
+}
+
 .animated {
   animation: showUp 0.3s ease-in-out;
 }

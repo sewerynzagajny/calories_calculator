@@ -9,9 +9,15 @@ const units = [
   { id: 3, unit: "l" },
 ];
 
-function Button({ type, style, onClick, children }) {
+function Button({ type, style, onClick, children, loading }) {
   return (
-    <button type={type} style={style} onClick={onClick} className="button">
+    <button
+      type={type}
+      style={style}
+      onClick={!loading ? onClick : null}
+      disabled={loading}
+      className={`button ${loading ? "button--loading" : ""}`}
+    >
       {children}
     </button>
   );
@@ -321,6 +327,7 @@ export default function App() {
             onClick={handleClick}
             onFocus={handleFocus}
             setShowButtons={setShowButtons}
+            loading={loading}
           />
 
           <FoodItemsList
@@ -366,6 +373,7 @@ export default function App() {
               onFocus={handleFocus}
               inputRef={inputRef}
               setShowButtons={setShowButtons}
+              loading={loading}
             />
           )}
         </>
@@ -397,6 +405,7 @@ function AddItemForm({
   onClick,
   onFocus,
   setShowButtons,
+  loading,
 }) {
   function handleSubmit(e) {
     e.preventDefault();
@@ -462,7 +471,9 @@ function AddItemForm({
           ))}
         </select>
 
-        <Button style={{ width: "12rem" }}>Dodaj</Button>
+        <Button loading={loading} style={{ width: "12rem" }}>
+          Dodaj
+        </Button>
       </div>
     </form>
   );
@@ -552,6 +563,7 @@ function FoodItemsList({
                 : "",
             }}
             onClick={getAIanswer}
+            loading={loading}
           >
             {loading ? <Spinner /> : "Szacuj"}
           </Button>
@@ -562,6 +574,7 @@ function FoodItemsList({
                 : "",
             }}
             onClick={onClearList}
+            loading={loading}
           >
             Usuń listę
           </Button>
