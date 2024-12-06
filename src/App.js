@@ -40,6 +40,8 @@ export default function App() {
   const [kcalItems, setKcalItems] = useState([]);
   const [dataKcalLoaded, setDataKcalLoaded] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+
   // const container = document.querySelector(".food-items__food-list");
   // const containerRef = useRef(null);
 
@@ -56,6 +58,7 @@ export default function App() {
 
   const apiKey = process.env.REACT_APP_API_KEY;
   const apiURL = "https://api.openai.com/v1/chat/completions";
+  const model = "gpt-3.5-turbo";
 
   function Timeout(s) {
     return new Promise(function (_, reject) {
@@ -195,6 +198,7 @@ export default function App() {
   }
 
   async function handleEstimate() {
+    // setLoading(true);
     const container = document.querySelector(".food-items__food-list");
     const foodItemString = foodItems
       .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
@@ -202,7 +206,7 @@ export default function App() {
     const estimateText = `Oszacuj kaloryczność i makroskładniki dla: ${foodItemString}. Zwróć wynik bez żadnych opisów i komentarzy tylko w formacie JSON z kluczami: calories, protein, fat, carbohydrates.`;
 
     const dataInput = {
-      model: "gpt-3.5-turbo",
+      model,
       messages: [
         { role: "system", content: "Jesteś pomocnym asystentem." },
         { role: "user", content: estimateText },
@@ -225,6 +229,16 @@ export default function App() {
         protein: dataOutput.protein,
       };
 
+      // const newKcalItem = {
+      //   id,
+      //   food: foodItemString,
+      //   calories: "test",
+      //   fat: "test",
+      //   carbohydrates: "test",
+      //   protein: "test",
+      // };
+      // console.log("test");
+
       // if (containerRef.current) {
       //   setContainerHeight(containerRef.current.offsetHeight + "px");
       // }
@@ -233,6 +247,7 @@ export default function App() {
       setFoodItems([]);
       setTimeout(() => {
         setContainerHeight("auto");
+        setLoading(false);
       }, 270);
     } catch (error) {
       console.error("Error fetching estimate:", error);
@@ -324,6 +339,8 @@ export default function App() {
             containerHeight={containerHeight}
             dataLoaded={dataLoaded}
             onEstimate={handleEstimate}
+            loading={loading}
+            setLoading={setLoading}
           />
 
           <KcalOutputList
@@ -467,10 +484,17 @@ function FoodItemsList({
   containerHeight,
   dataLoaded,
   onEstimate,
+  loading,
+  setLoading,
 }) {
   const [showDelayedButton, setShowDelayedButton] = useState(true);
   const hasSelectedItem = selectedItemId !== null;
   const elementRef = useRef(null);
+
+  function getAIanswer() {
+    setLoading(true);
+    onEstimate();
+  }
 
   useEffect(() => {
     if (dataLoaded) {
@@ -493,7 +517,7 @@ function FoodItemsList({
       >
         <ul
           ref={elementRef}
-          className={hasSelectedItem ? "has-selected-item" : ""}
+          className={hasSelectedItem || loading ? "has-selected-item" : ""}
         >
           {foodItems.map((foodItem, numItem) => (
             <FoodItem
@@ -510,6 +534,7 @@ function FoodItemsList({
               setPopupVisible={setPopupVisible}
               setShowButtons={setShowButtons}
               foodItems={foodItems}
+              loading={loading}
             />
           ))}
         </ul>
@@ -526,9 +551,9 @@ function FoodItemsList({
                 ? "moveInBotton 0.5s backwards ease-in-out"
                 : "",
             }}
-            onClick={onEstimate}
+            onClick={getAIanswer}
           >
-            Szacuj!
+            {loading ? <Spinner /> : "Szacuj"}
           </Button>
           <Button
             style={{
@@ -558,6 +583,7 @@ function FoodItem({
   popupVisible,
   setShowButtons,
   foodItems,
+  loading,
 }) {
   const isSelected = selectedItemId === foodItem.id;
   const elementRef = useRef(null);
@@ -612,7 +638,7 @@ function FoodItem({
 
   return (
     <li className={`food-item ${isSelected ? "selected" : ""}`}>
-      <span ref={elementRef} onClick={handleClickItem}>
+      <span ref={elementRef} onClick={!loading ? handleClickItem : null}>
         {foodItem.quantity.length ? (
           <>
             <span className="food-item__number">{numItem + 1}. </span>
@@ -895,6 +921,16 @@ function Popup({
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function Spinner() {
+  return (
+    <div className="spinner">
+      <svg witdth="24" height="24">
+        <use href="/icons.svg#icon-loader" />
+      </svg>
     </div>
   );
 }

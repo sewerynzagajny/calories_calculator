@@ -77,6 +77,15 @@ $color-blue: #a5d8ff;
   }
 }
 
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 * {
   margin: 0;
@@ -99,6 +108,20 @@ body {
   background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
     url(body.webp);
   background-size: cover;
+  background-repeat: no-repeat;
+  // background-position: center;
+  background-attachment: fixed;
+
+  &::after {
+    content: "";
+    display: block;
+    height: 100%;
+    background-image: url(body.webp);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -186,6 +209,9 @@ body {
   opacity: 1;
   animation: moveInBotton 0.5s backwards ease-in-out 1s;
   transition: all 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   background-color: $color-blue;
   // color: $font-color-primary;
@@ -250,7 +276,6 @@ body {
   // justify-content: space-between;
   align-items: center;
   gap: 1.2rem;
-  margin-bottom: 2.4rem;
   // gap: 2.4rem; //small-scr
 
   &__food-list {
@@ -286,6 +311,7 @@ body {
     display: flex;
     justify-content: center;
     gap: 1.8rem;
+    margin-bottom: 4.2rem;
   }
 }
 
@@ -370,6 +396,7 @@ body {
     // align-content: space-around;
     align-items: center;
     margin-left: 1rem;
+    margin-bottom: 1.8rem;
 
     & li {
       & span {
@@ -412,6 +439,20 @@ body {
     &--edit_item {
       @include input_item(none, 3, 0, 0);
     }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+.spinner {
+  display: flex;
+  margin: -1.2rem auto;
+  text-align: center;
+
+  svg {
+    height: 2rem;
+    width: 6.037rem;
+    fill: $font-color-secondary;
+    animation: rotate 2s infinite linear;
   }
 }
 
