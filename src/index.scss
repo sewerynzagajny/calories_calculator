@@ -203,6 +203,54 @@ body {
   }
 }
 
+@mixin items-list($name-items, $name-list, $ul_margin-button) {
+  .#{$name-items} {
+    display: flex;
+    flex-direction: column;
+    // justify-content: space-between;
+    align-items: center;
+    gap: 1.2rem;
+    // gap: 2.4rem; //small-scr
+
+    &__#{$name-list} {
+      // width: 30%; //small-scr
+      width: 92rem;
+      // overflow: scroll;
+      // overflow-y: auto;
+      // overflow-x: hidden;
+      // flex: 1;
+      // max-height: 24vh;
+      margin-bottom: 0.8rem;
+    }
+
+    & ul {
+      list-style: none;
+      display: grid;
+      // grid-template-columns: repeat(auto-fit, minmax(90rem, 1fr)); //small-scr
+      grid-template-columns: repeat(auto-fit, minmax(62rem, 1fr));
+      gap: 1.8rem;
+      justify-content: center;
+      // align-content: space-around;
+      align-items: center;
+      margin-left: 1rem;
+      margin-bottom: $ul_margin-button;
+
+      & li {
+        & span {
+          cursor: pointer;
+        }
+      }
+    }
+
+    &__action {
+      display: flex;
+      justify-content: center;
+      gap: 1.8rem;
+      margin-bottom: 4.2rem;
+    }
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////
 .button {
   @extend %common-input-styles;
@@ -274,51 +322,8 @@ body {
 }
 
 ///////////////////////////////////////////////////////////////
-
-.food-items {
-  display: flex;
-  flex-direction: column;
-  // justify-content: space-between;
-  align-items: center;
-  gap: 1.2rem;
-  // gap: 2.4rem; //small-scr
-
-  &__food-list {
-    // width: 30%; //small-scr
-    width: 92rem;
-    // overflow: scroll;
-    // overflow-y: auto;
-    // overflow-x: hidden;
-    // flex: 1;
-    // max-height: 24vh;
-    margin-bottom: 0.8rem;
-  }
-
-  & ul {
-    list-style: none;
-    display: grid;
-    // grid-template-columns: repeat(auto-fit, minmax(90rem, 1fr)); //small-scr
-    grid-template-columns: repeat(auto-fit, minmax(62rem, 1fr));
-    gap: 1.8rem;
-    justify-content: center;
-    // align-content: space-around;
-    align-items: center;
-    margin-left: 1rem;
-
-    & li {
-      & span {
-        cursor: pointer;
-      }
-    }
-  }
-
-  &__action {
-    display: flex;
-    justify-content: center;
-    gap: 1.8rem;
-    margin-bottom: 4.2rem;
-  }
-}
+///food-items
+@include items-list("food-items", "food-list", 0);
 
 ///////////////////////////////////////////////////////////////
 
@@ -371,49 +376,57 @@ body {
   }
 }
 /////////////////////////////////////////////////////
+///kcal-items
+@include items-list("kcal-items", "kcal-list", 1.8rem);
+.kcal-items__kcal-list--list:last-child {
+  margin-bottom: -1.8rem;
+}
 
-.kcal-items {
-  display: flex;
-  flex-direction: column;
-  // justify-content: space-between;
-  align-items: center;
-  gap: 1.2rem;
-  // gap: 2.4rem; //small-scr
+/////////////////////////////////////////////////////
+//kcal-item
 
-  &__kcal-list {
-    // width: 30%; //small-scr
-    width: 92rem;
-    overflow: scroll;
-    overflow-y: auto;
-    overflow-x: hidden;
-    // flex: 1;
-    // max-height: 24vh;
-    margin-bottom: 0.8rem;
+.kcal-item {
+  color: $font-color-primary;
+  transition: all 0.3s;
+  &.selected {
+    color: $font-color-primary;
   }
-
-  & ul {
-    list-style: none;
-    display: grid;
-    // grid-template-columns: repeat(auto-fit, minmax(90rem, 1fr)); //small-scr
-    grid-template-columns: repeat(auto-fit, minmax(62rem, 1fr));
-    gap: 1.8rem;
-    justify-content: center;
-    // align-content: space-around;
-    align-items: center;
-    margin-left: 1rem;
-    margin-bottom: 1.8rem;
-
-    & li {
-      & span {
-        cursor: pointer;
-      }
+  .has-selected-item & {
+    &:not(.selected) {
+      color: $font-color-primary-dark;
     }
   }
 
-  &__action {
+  &__food {
+    font-weight: $font-strong;
+    font-style: italic;
+  }
+
+  &__btn {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
     display: flex;
-    justify-content: center;
     gap: 1.8rem;
+
+    &--action {
+      color: $font-color-secondary;
+      background-color: $color-blue;
+      border: none;
+      border-radius: 10rem;
+      font-family: inherit;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 0.4rem 1.4rem;
+      font-size: 1.6rem;
+      box-shadow: 0 1rem 2rem rgba($color-black, 0.2);
+      animation: showUp 0.16s backwards ease-in-out;
+      transition: all 0.3s;
+      &:active {
+        transform: translateY(0.1rem);
+        box-shadow: 0 0.5rem 1rem rgba($color-black, 0.2);
+      }
+    }
   }
 }
 

@@ -42,25 +42,13 @@ export default function App() {
 
   const [isCheck, setIsCheck] = useState(false);
   const [containerHeight, setContainerHeight] = useState("auto");
+  const [containerKcalHeight, setContainerKcalHeight] = useState("auto");
 
   const [kcalItems, setKcalItems] = useState([]);
+  const [showKcalButtons, setShowKcalButtons] = useState(false);
   const [dataKcalLoaded, setDataKcalLoaded] = useState(false);
 
   const [loading, setLoading] = useState(false);
-
-  // const container = document.querySelector(".food-items__food-list");
-  // const containerRef = useRef(null);
-
-  // const kcalItems = [
-  //   {
-  //     id: 0,
-  //     food: "Kotlet schabowy: 200 g, ziemniaki gotowane: 180 g, buraczki zasmażane z cebulą: 90 g",
-  //     kcal: 570,
-  //     fat: 23,
-  //     carbohydrates: 52,
-  //     protein: 13,
-  //   },
-  // ];
 
   const apiKey = process.env.REACT_APP_API_KEY;
   const apiURL = "https://api.openai.com/v1/chat/completions";
@@ -134,6 +122,12 @@ export default function App() {
     setSelectedItemId(null);
     if (foodItems.length === 1) {
       setContainerHeight(container.offsetHeight + "px");
+      if (kcalItems.length) {
+        setShowKcalButtons(false);
+        setTimeout(() => {
+          setShowKcalButtons(true);
+        }, 1);
+      }
       setTimeout(() => {
         setContainerHeight("auto");
       }, 270);
@@ -162,6 +156,26 @@ export default function App() {
       setFoodItems([]);
       setTimeout(() => {
         setContainerHeight("auto");
+      }, 270);
+      if (kcalItems.length) {
+        setShowKcalButtons(false);
+        setTimeout(() => {
+          setShowKcalButtons(true);
+        }, 1);
+      }
+    }
+  }
+
+  function handleClearKcalList() {
+    const container = document.querySelector(".kcal-items__kcal-list");
+    const confirmed = window.confirm(
+      "Czy na pewno chcesz usunąć listę z wynikami?"
+    );
+    if (confirmed) {
+      setContainerKcalHeight(container.offsetHeight + "px");
+      setKcalItems([]);
+      setTimeout(() => {
+        setContainerKcalHeight("auto");
       }, 270);
     }
   }
@@ -222,28 +236,28 @@ export default function App() {
     };
 
     try {
-      const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
-      const output = response.choices[0].message.content;
-      const dataOutput = JSON.parse(output);
+      // const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
+      // const output = response.choices[0].message.content;
+      // const dataOutput = JSON.parse(output);
       const id = crypto.randomUUID();
-      const newKcalItem = {
-        id,
-        food: foodItemString,
-        calories: dataOutput.calories,
-        fat: dataOutput.fat,
-        carbohydrates: dataOutput.carbohydrates,
-        protein: dataOutput.protein,
-      };
-
       // const newKcalItem = {
       //   id,
       //   food: foodItemString,
-      //   calories: "test",
-      //   fat: "test",
-      //   carbohydrates: "test",
-      //   protein: "test",
+      //   calories: dataOutput.calories,
+      //   fat: dataOutput.fat,
+      //   carbohydrates: dataOutput.carbohydrates,
+      //   protein: dataOutput.protein,
       // };
-      // console.log("test");
+
+      const newKcalItem = {
+        id,
+        food: foodItemString,
+        calories: "test",
+        fat: "test",
+        carbohydrates: "test",
+        protein: "test",
+      };
+      console.log("test");
 
       // if (containerRef.current) {
       //   setContainerHeight(containerRef.current.offsetHeight + "px");
@@ -295,15 +309,24 @@ export default function App() {
     const storedKcalItems = localStorage.getItem("kcalItems");
     if (storedKcalItems) {
       setKcalItems(JSON.parse(storedKcalItems));
+      setShowKcalButtons(true);
     }
     setDataKcalLoaded(true);
   }, []);
 
   useEffect(() => {
     if (dataKcalLoaded) {
-      localStorage.setItem("kcalItems", JSON.stringify(kcalItems));
-    } else {
-      localStorage.removeItem("kcalItems");
+      if (kcalItems.length > 0) {
+        localStorage.setItem("kcalItems", JSON.stringify(kcalItems));
+        setShowButtons(true);
+      } else {
+        localStorage.removeItem("kcalItems");
+        setTimeout(() => {
+          if (kcalItems.length === 0) {
+            setShowKcalButtons(false);
+          }
+        }, 270);
+      }
     }
   }, [kcalItems, dataKcalLoaded]);
 
@@ -328,6 +351,8 @@ export default function App() {
             onFocus={handleFocus}
             setShowButtons={setShowButtons}
             loading={loading}
+            setShowKcalButtons={setShowKcalButtons}
+            kcalItems={kcalItems}
           />
 
           <FoodItemsList
@@ -343,17 +368,23 @@ export default function App() {
             popupVisible={popupVisible}
             setPopupVisible={setPopupVisible}
             setShowButtons={setShowButtons}
+            setShowKcalButtons={setShowKcalButtons}
             containerHeight={containerHeight}
             dataLoaded={dataLoaded}
             onEstimate={handleEstimate}
             loading={loading}
             setLoading={setLoading}
+            kcalItems={kcalItems}
           />
 
           <KcalOutputList
             kcalItems={kcalItems}
             foodItems={foodItems}
             dataLoaded={dataLoaded}
+            onClearKcalList={handleClearKcalList}
+            showKcalButtons={showKcalButtons}
+            setShowKcalButtons={setShowKcalButtons}
+            containerKcalHeight={containerKcalHeight}
           />
           <Footer />
           {popupVisible && (
@@ -406,6 +437,8 @@ function AddItemForm({
   onFocus,
   setShowButtons,
   loading,
+  setShowKcalButtons,
+  kcalItems,
 }) {
   function handleSubmit(e) {
     e.preventDefault();
@@ -420,12 +453,14 @@ function AddItemForm({
     };
     // ;
     setShowButtons(false);
+    setShowKcalButtons(false);
     setFood("");
     setQuantity("");
     setUnit("g");
     onAddItems(newFoodItem);
     setTimeout(() => {
       setShowButtons(true);
+      if (kcalItems.length) setShowKcalButtons(true);
     }, 1);
   }
 
@@ -492,11 +527,13 @@ function FoodItemsList({
   popupVisible,
   setPopupVisible,
   setShowButtons,
+  setShowKcalButtons,
   containerHeight,
   dataLoaded,
   onEstimate,
   loading,
   setLoading,
+  kcalItems,
 }) {
   const [showDelayedButton, setShowDelayedButton] = useState(true);
   const hasSelectedItem = selectedItemId !== null;
@@ -505,6 +542,11 @@ function FoodItemsList({
   function getAIanswer() {
     setLoading(true);
     onEstimate();
+    setShowKcalButtons(true);
+    if (kcalItems.length) setShowKcalButtons(false);
+    setTimeout(() => {
+      setShowKcalButtons(true);
+    }, 1);
   }
 
   useEffect(() => {
@@ -544,8 +586,10 @@ function FoodItemsList({
               popupVisible={popupVisible}
               setPopupVisible={setPopupVisible}
               setShowButtons={setShowButtons}
+              setShowKcalButtons={setShowKcalButtons}
               foodItems={foodItems}
               loading={loading}
+              kcalItems={kcalItems}
             />
           ))}
         </ul>
@@ -595,8 +639,10 @@ function FoodItem({
   onCursorPosition,
   popupVisible,
   setShowButtons,
+  setShowKcalButtons,
   foodItems,
   loading,
+  kcalItems,
 }) {
   const isSelected = selectedItemId === foodItem.id;
   const elementRef = useRef(null);
@@ -610,8 +656,10 @@ function FoodItem({
     onDelete(foodItem.id);
     if (foodItems.length === 1) return;
     setShowButtons(false);
+    if (kcalItems.length) setShowKcalButtons(false);
     setTimeout(() => {
       setShowButtons(true);
+      if (kcalItems.length) setShowKcalButtons(true);
     }, 1);
   }
 
@@ -692,8 +740,16 @@ function FoodItem({
   );
 }
 
-function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
+function KcalOutputList({
+  kcalItems,
+  foodItems,
+  dataLoaded,
+  onClearKcalList,
+  showKcalButtons,
+  containerKcalHeight,
+}) {
   const prevFoodItemsLength = useRef(foodItems.length);
+  const [showDelayedButton, setShowDelayedButton] = useState(true);
 
   useEffect(() => {
     const elements = document.querySelectorAll(".kcal-item");
@@ -704,6 +760,7 @@ function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
           const timer = setTimeout(() => {
             element.classList.remove("long-animated");
           }, 1300);
+          setShowDelayedButton(true);
           return () => clearTimeout(timer);
         });
       } else {
@@ -712,6 +769,7 @@ function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
           const timer = setTimeout(() => {
             element.classList.remove("animated");
           }, 300);
+          setShowDelayedButton(false);
           return () => clearTimeout(timer);
         });
       }
@@ -728,8 +786,11 @@ function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
 
   return (
     <div ref={elementRef} className="kcal-items">
-      <div className="kcal-items__kcal-list">
-        <ul>
+      <div
+        className="kcal-items__kcal-list"
+        style={{ height: containerKcalHeight }}
+      >
+        <ul className="kcal-items__kcal-list--list">
           {kcalItems
             .map((kcalItem) => (
               <KcalOutputLItem kcalItem={kcalItem} key={kcalItem.id} />
@@ -737,6 +798,33 @@ function KcalOutputList({ kcalItems, foodItems, dataLoaded }) {
             .reverse()}
         </ul>
       </div>
+      {showKcalButtons && (
+        <div
+          className={`kcal-items__action ${
+            !kcalItems.length ? "move-out" : ""
+          }`}
+        >
+          <Button
+            style={{
+              animation: !showDelayedButton
+                ? "moveInBotton 0.5s backwards ease-in-out"
+                : "",
+            }}
+          >
+            Suma
+          </Button>
+          <Button
+            style={{
+              animation: !showDelayedButton
+                ? "moveInBotton 0.5s backwards ease-in-out"
+                : "",
+            }}
+            onClick={onClearKcalList}
+          >
+            Usuń listę kcal
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
