@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useRef } from "react";
-import { useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const units = [
   { id: 0, unit: "g" },
@@ -47,6 +45,7 @@ export default function App() {
   const [kcalItems, setKcalItems] = useState([]);
   const [showKcalButtons, setShowKcalButtons] = useState(false);
   const [dataKcalLoaded, setDataKcalLoaded] = useState(false);
+  const [selectedKcalItemId, setSelectedKcalItemId] = useState(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -134,6 +133,18 @@ export default function App() {
     }
   }
 
+  function handleDeleteKcalItem(id) {
+    const container = document.querySelector(".kcal-items__kcal-list");
+    setKcalItems((kcalItems) => kcalItems.filter((item) => item.id !== id));
+    setSelectedKcalItemId(null);
+    if (kcalItems.length === 1) {
+      setContainerKcalHeight(container.offsetHeight + "px");
+      setTimeout(() => {
+        setContainerKcalHeight("auto");
+      }, 270);
+    }
+  }
+
   function handleEditItem(id, e) {
     const item = foodItems.find((item) => item.id === id);
     setItemToEdit(item);
@@ -144,6 +155,9 @@ export default function App() {
 
   function handleSelectedItem(id) {
     setSelectedItemId((cur) => (cur === id ? null : id));
+  }
+  function handleSelectedKcalItem(id) {
+    setSelectedKcalItemId((cur) => (cur === id ? null : id));
   }
 
   function handleClearList() {
@@ -187,7 +201,7 @@ export default function App() {
       (charCode >= 96 && charCode <= 105)
     ) {
       e.preventDefault();
-      alert("Wipisz ilość w innym polu!");
+      alert("Wpisz ilość w innym polu!");
       inputRef.current.blur();
     }
   }
@@ -318,7 +332,7 @@ export default function App() {
     if (dataKcalLoaded) {
       if (kcalItems.length > 0) {
         localStorage.setItem("kcalItems", JSON.stringify(kcalItems));
-        setShowButtons(true);
+        setShowKcalButtons(true);
       } else {
         localStorage.removeItem("kcalItems");
         setTimeout(() => {
@@ -380,11 +394,17 @@ export default function App() {
           <KcalOutputList
             kcalItems={kcalItems}
             foodItems={foodItems}
+            selectedKcalItemId={selectedKcalItemId}
+            onSelectedKcalItem={handleSelectedKcalItem}
             dataLoaded={dataLoaded}
             onClearKcalList={handleClearKcalList}
             showKcalButtons={showKcalButtons}
             setShowKcalButtons={setShowKcalButtons}
             containerKcalHeight={containerKcalHeight}
+            cursorPosition={cursorPosition}
+            onCursorPosition={setCursorPosition}
+            onDeleteKcalItem={handleDeleteKcalItem}
+            loading={loading}
           />
           <Footer />
           {popupVisible && (
@@ -743,18 +763,28 @@ function FoodItem({
 function KcalOutputList({
   kcalItems,
   foodItems,
+  selectedKcalItemId,
+  onSelectedKcalItem,
   dataLoaded,
   onClearKcalList,
   showKcalButtons,
+  setShowKcalButtons,
   containerKcalHeight,
+  cursorPosition,
+  onCursorPosition,
+  onDeleteKcalItem,
+  loading,
 }) {
   const prevFoodItemsLength = useRef(foodItems.length);
+  const prevKcalItemsLength = useRef(kcalItems.length);
   const [showDelayedButton, setShowDelayedButton] = useState(true);
+  const hasSelectedKcalItem = selectedKcalItemId !== null;
 
   useEffect(() => {
     const elements = document.querySelectorAll(".kcal-item");
     if (foodItems.length !== prevFoodItemsLength.current) {
-      if (foodItems.length === 0) {
+      if (foodItems.length === 0 && prevFoodItemsLength.current > 0) {
+        // Usunięto ostatni element lub wszystkie elementy z foodItems
         elements.forEach((element) => {
           element.classList.add("long-animated");
           const timer = setTimeout(() => {
@@ -764,6 +794,7 @@ function KcalOutputList({
           return () => clearTimeout(timer);
         });
       } else {
+        // Dodano elementy lub usunięto pojedyncze elementy, ale nie wszystkie
         elements.forEach((element) => {
           element.classList.add("animated");
           const timer = setTimeout(() => {
@@ -774,8 +805,19 @@ function KcalOutputList({
         });
       }
     }
+
+    // Sprawdź, czy `foodItems` jest puste i `kcalItems` się zmieniło
+    if (
+      foodItems.length === 0 &&
+      kcalItems.length < prevKcalItemsLength.current
+    ) {
+      setShowDelayedButton(false);
+    }
+
     prevFoodItemsLength.current = foodItems.length;
-  }, [foodItems, dataLoaded]);
+    prevKcalItemsLength.current = kcalItems.length;
+  }, [foodItems, kcalItems, dataLoaded, setShowKcalButtons]);
+
   const elementRef = useRef(null);
 
   useEffect(() => {
@@ -790,10 +832,24 @@ function KcalOutputList({
         className="kcal-items__kcal-list"
         style={{ height: containerKcalHeight }}
       >
-        <ul className="kcal-items__kcal-list--list">
+        <ul
+          className={`kcal-items__kcal-list--list ${
+            hasSelectedKcalItem ? "has-selected-item" : ""
+          }`}
+        >
           {kcalItems
             .map((kcalItem) => (
-              <KcalOutputLItem kcalItem={kcalItem} key={kcalItem.id} />
+              <KcalOutputLItem
+                kcalItem={kcalItem}
+                key={kcalItem.id}
+                selectedKcalItemId={selectedKcalItemId}
+                onSelectedKcalItem={onSelectedKcalItem}
+                cursorPosition={cursorPosition}
+                onCursorPosition={onCursorPosition}
+                onDeleteKcalItem={onDeleteKcalItem}
+                setShowKcalButtons={setShowKcalButtons}
+                loading={loading}
+              />
             ))
             .reverse()}
         </ul>
@@ -829,10 +885,71 @@ function KcalOutputList({
   );
 }
 
-function KcalOutputLItem({ kcalItem }) {
+function KcalOutputLItem({
+  kcalItem,
+  selectedKcalItemId,
+  onSelectedKcalItem,
+  cursorPosition,
+  onCursorPosition,
+  onDeleteKcalItem,
+  setShowKcalButtons,
+  loading,
+}) {
+  const isKcalSelected = selectedKcalItemId === kcalItem.id;
+  const elementRef = useRef(null);
+
+  function handleClickKcalItem(e) {
+    if (e.target.tagName === "SPAN") {
+      onSelectedKcalItem(kcalItem.id);
+      onCursorPosition({
+        x: e.clientX - 40,
+        y: e.clientY + window.scrollY,
+      });
+    }
+  }
+
+  function handleDeleteKcalItemEffect() {
+    onDeleteKcalItem(kcalItem.id);
+    if (kcalItem.length === 1) return;
+    setShowKcalButtons(false);
+    setTimeout(() => {
+      setShowKcalButtons(true);
+    }, 1);
+  }
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (
+        elementRef.current &&
+        !e.target.classList.contains("kcal-item__btn--action") &&
+        !elementRef.current.contains(e.target)
+      ) {
+        if (isKcalSelected) {
+          onSelectedKcalItem(null);
+        }
+      } else if (e.target.tagName === "LI" || e.target.tagName === "UL") {
+        onSelectedKcalItem(null);
+      }
+    }
+
+    function handleEscKey(e) {
+      if (e.key === "Escape") {
+        onSelectedKcalItem(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [isKcalSelected, onSelectedKcalItem]);
+
   return (
-    <li className="kcal-item">
-      <ul>
+    <li className={`kcal-item ${isKcalSelected ? "selected" : ""}`}>
+      <ul ref={elementRef} onClick={!loading ? handleClickKcalItem : null}>
         <li>
           <span className="kcal-item__food">{kcalItem.food}</span>
         </li>
@@ -854,6 +971,19 @@ function KcalOutputLItem({ kcalItem }) {
           <span className="kcal-item__food">Białko: {kcalItem.protein} g</span>
         </li>
       </ul>
+      {isKcalSelected && (
+        <div
+          className="kcal-item__btn"
+          style={{ top: cursorPosition.y, left: cursorPosition.x }}
+        >
+          <button
+            className="kcal-item__btn--action"
+            onClick={handleDeleteKcalItemEffect}
+          >
+            Usuń
+          </button>
+        </div>
+      )}
     </li>
   );
 }
@@ -1029,7 +1159,7 @@ function Popup({
 function Spinner() {
   return (
     <div className="spinner">
-      <svg witdth="24" height="24">
+      <svg width="24" height="24">
         <use href="/icons.svg#icon-loader" />
       </svg>
     </div>
