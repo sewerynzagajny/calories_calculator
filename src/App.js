@@ -816,7 +816,13 @@ function KcalOutputList({
 
     prevFoodItemsLength.current = foodItems.length;
     prevKcalItemsLength.current = kcalItems.length;
-  }, [foodItems, kcalItems, dataLoaded, setShowKcalButtons]);
+  }, [
+    foodItems,
+    kcalItems,
+    dataLoaded,
+    setShowKcalButtons,
+    setShowDelayedButton,
+  ]);
 
   const elementRef = useRef(null);
 
@@ -827,12 +833,13 @@ function KcalOutputList({
   }, [dataLoaded]);
 
   return (
-    <div ref={elementRef} className="kcal-items">
+    <div className="kcal-items">
       <div
         className="kcal-items__kcal-list"
         style={{ height: containerKcalHeight }}
       >
         <ul
+          ref={elementRef}
           className={`kcal-items__kcal-list--list ${
             hasSelectedKcalItem ? "has-selected-item" : ""
           }`}
@@ -849,6 +856,7 @@ function KcalOutputList({
                 onDeleteKcalItem={onDeleteKcalItem}
                 setShowKcalButtons={setShowKcalButtons}
                 loading={loading}
+                kcalItems={kcalItems}
               />
             ))
             .reverse()}
@@ -894,6 +902,7 @@ function KcalOutputLItem({
   onDeleteKcalItem,
   setShowKcalButtons,
   loading,
+  kcalItems,
 }) {
   const isKcalSelected = selectedKcalItemId === kcalItem.id;
   const elementRef = useRef(null);
@@ -910,7 +919,7 @@ function KcalOutputLItem({
 
   function handleDeleteKcalItemEffect() {
     onDeleteKcalItem(kcalItem.id);
-    if (kcalItem.length === 1) return;
+    if (kcalItems.length === 1) return;
     setShowKcalButtons(false);
     setTimeout(() => {
       setShowKcalButtons(true);
