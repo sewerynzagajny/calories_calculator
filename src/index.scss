@@ -137,6 +137,11 @@ body {
   font-size: 1.8rem;
 }
 
+%strong-style {
+  font-weight: $font-strong;
+  font-style: italic;
+}
+
 ////////////////////////////////////////////////////////////////////////
 
 @mixin input_item($time-animation, $button-gap, $padding-bottom, $margin) {
@@ -345,8 +350,7 @@ body {
 
   &__quantity,
   &__unit {
-    font-weight: $font-strong;
-    font-style: italic;
+    @extend %strong-style;
   }
   &__btn {
     position: absolute;
@@ -377,7 +381,8 @@ body {
 }
 /////////////////////////////////////////////////////
 ///kcal-items
-@include items-list("kcal-items", "kcal-list", 1.8rem);
+@include items-list("kcal-items", "kcal-list", 2.8rem);
+
 .kcal-items__kcal-list--list:last-child {
   margin-bottom: -1.8rem;
 }
@@ -397,9 +402,12 @@ body {
     }
   }
 
-  &__food {
-    font-weight: $font-strong;
-    font-style: italic;
+  & li:first-child {
+    margin-bottom: 0.8rem;
+  }
+
+  &__value {
+    @extend %strong-style;
   }
 
   &__btn {
@@ -456,6 +464,54 @@ body {
     padding: 0.4rem;
     &--edit_item {
       @include input_item(none, 3, 0, 0);
+    }
+  }
+}
+
+/////////////////////////////////////////////////////
+
+.popup_total {
+  position: fixed;
+  background-color: rgb(0, 0, 0, 0.3);
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+  z-index: 99999;
+  height: 100vh;
+  width: 100vw;
+
+  animation: showUp 0.3s ease-in-out;
+
+  &__content {
+    background-color: $font-color-secondary;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    // left: 15rem;
+
+    border-radius: 2rem;
+    border: #f3f3f3 solid 0.2rem;
+    padding: 4rem 4.8rem;
+
+    &__list {
+      margin-bottom: 3.6rem;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+      justify-content: center;
+      align-items: flex-start;
+
+      &--item-value {
+        @extend %strong-style;
+      }
+    }
+
+    &__btn {
+      text-align: center;
     }
   }
 }

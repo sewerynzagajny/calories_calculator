@@ -29,6 +29,7 @@ export default function App() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [popupVisible, setPopupVisible] = useState(false);
+  const [popupTotalVisible, setPopupTotalVisible] = useState(false);
 
   const [food, setFood] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -52,6 +53,7 @@ export default function App() {
   const apiKey = process.env.REACT_APP_API_KEY;
   const apiURL = "https://api.openai.com/v1/chat/completions";
   const model = "gpt-3.5-turbo";
+  const [sum, setSum] = useState({});
 
   function Timeout(s) {
     return new Promise(function (_, reject) {
@@ -194,6 +196,22 @@ export default function App() {
     }
   }
 
+  function sumValues(items, key) {
+    return items.reduce((acc, item) => acc + +item[key], 0);
+  }
+
+  function handleShowTotal() {
+    setPopupTotalVisible(true);
+    const totalSum = {
+      quantity: kcalItems.length,
+      calories: sumValues(kcalItems, "calories"),
+      fat: sumValues(kcalItems, "fat"),
+      carbohydrates: sumValues(kcalItems, "carbohydrates"),
+      protein: sumValues(kcalItems, "protein"),
+    };
+    setSum(totalSum);
+  }
+
   function handleKeyDown(e) {
     const charCode = e.keyCode || e.which;
     if (
@@ -236,7 +254,8 @@ export default function App() {
     const container = document.querySelector(".food-items__food-list");
     const foodItemString = foodItems
       .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
-      .join(". ");
+      .join("; ")
+      .trim();
     const estimateText = `Oszacuj kaloryczność i makroskładniki dla: ${foodItemString}. Zwróć wynik bez żadnych opisów i komentarzy tylko w formacie JSON z kluczami: calories, protein, fat, carbohydrates.`;
 
     const dataInput = {
@@ -266,10 +285,10 @@ export default function App() {
       const newKcalItem = {
         id,
         food: foodItemString,
-        calories: "test",
-        fat: "test",
-        carbohydrates: "test",
-        protein: "test",
+        calories: "100",
+        fat: "10",
+        carbohydrates: "15",
+        protein: "20",
       };
       console.log("test");
 
@@ -368,7 +387,6 @@ export default function App() {
             setShowKcalButtons={setShowKcalButtons}
             kcalItems={kcalItems}
           />
-
           <FoodItemsList
             foodItems={foodItems}
             selectedItemId={selectedItemId}
@@ -390,7 +408,6 @@ export default function App() {
             setLoading={setLoading}
             kcalItems={kcalItems}
           />
-
           <KcalOutputList
             kcalItems={kcalItems}
             foodItems={foodItems}
@@ -405,6 +422,7 @@ export default function App() {
             onCursorPosition={setCursorPosition}
             onDeleteKcalItem={handleDeleteKcalItem}
             loading={loading}
+            onShowTotal={handleShowTotal}
           />
           <Footer />
           {popupVisible && (
@@ -425,6 +443,13 @@ export default function App() {
               inputRef={inputRef}
               setShowButtons={setShowButtons}
               loading={loading}
+            />
+          )}
+          {popupTotalVisible && (
+            <PopupTotal
+              popupTotalVisible={popupTotalVisible}
+              setPopupTotalVisible={setPopupTotalVisible}
+              sum={sum}
             />
           )}
         </>
@@ -774,6 +799,7 @@ function KcalOutputList({
   onCursorPosition,
   onDeleteKcalItem,
   loading,
+  onShowTotal,
 }) {
   const prevFoodItemsLength = useRef(foodItems.length);
   const prevKcalItemsLength = useRef(kcalItems.length);
@@ -874,6 +900,7 @@ function KcalOutputList({
                 ? "moveInBotton 0.5s backwards ease-in-out"
                 : "",
             }}
+            onClick={onShowTotal}
           >
             Suma
           </Button>
@@ -965,19 +992,26 @@ function KcalOutputLItem({
         <li>
           <span className="kcal-item__food">
             {" "}
-            Kalorie: {kcalItem.calories} kcal
+            Kalorie:{" "}
+            <span className="kcal-item__value">{kcalItem.calories} kcal</span>
           </span>
-        </li>
-        <li>
-          <span className="kcal-item__food">Tłuszcze: {kcalItem.fat} g</span>
         </li>
         <li>
           <span className="kcal-item__food">
-            Węglowodany: {kcalItem.carbohydrates} g
+            Tłuszcze: <span className="kcal-item__value">{kcalItem.fat} g</span>
           </span>
         </li>
         <li>
-          <span className="kcal-item__food">Białko: {kcalItem.protein} g</span>
+          <span className="kcal-item__food">
+            Węglowodany:{" "}
+            <span className="kcal-item__value">{kcalItem.carbohydrates} g</span>
+          </span>
+        </li>
+        <li>
+          <span className="kcal-item__food">
+            Białko:{" "}
+            <span className="kcal-item__value">{kcalItem.protein} g</span>
+          </span>
         </li>
       </ul>
       {isKcalSelected && (
@@ -1159,6 +1193,98 @@ function Popup({
               Zapisz
             </Button>
           </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function PopupTotal({ popupTotalVisible, setPopupTotalVisible, sum }) {
+  useEffect(() => {
+    function handleClickOutside(e) {
+      const container = document.querySelector(".popup_total__content");
+
+      if (container && !container.contains(e.target)) {
+        setPopupTotalVisible(false);
+      }
+    }
+
+    function handleEscKey(e) {
+      if (e.key === "Escape") {
+        setPopupTotalVisible(false);
+      }
+    }
+
+    function handleEnterKey(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        setPopupTotalVisible(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscKey);
+    document.addEventListener("keydown", handleEnterKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
+      document.removeEventListener("keydown", handleEnterKey);
+    };
+  }, [popupTotalVisible, setPopupTotalVisible]);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    setPopupTotalVisible(false);
+  }
+  return (
+    <div className="popup_total">
+      <div className="popup_total__content">
+        <form onSubmit={handleSubmit}>
+          <ul className="popup_total__content__list">
+            <li>
+              Ilość dań/składników:{" "}
+              <span className="popup_total__content__list--item-value">
+                {sum.quantity}
+              </span>
+            </li>
+            <li>
+              Kalorie:{" "}
+              <span className="popup_total__content__list--item-value">
+                {sum.calories} kcal
+              </span>
+            </li>
+            <li>
+              Tłuszcze:{" "}
+              <span className="popup_total__content__list--item-value">
+                {sum.fat} g
+              </span>
+            </li>
+            <li>
+              Węglowodany:{" "}
+              <span className="popup_total__content__list--item-value">
+                {sum.carbohydrates} g
+              </span>
+            </li>
+            <li>
+              Białko:{" "}
+              <span className="popup_total__content__list--item-value">
+                {sum.protein} g
+              </span>
+            </li>
+          </ul>
+          <Button
+            type="submit"
+            className="popup-total__content__btn"
+            style={{
+              width: "12rem",
+              animation: "none",
+              display: "block",
+              margin: "0 auto",
+            }}
+          >
+            Ok
+          </Button>
         </form>
       </div>
     </div>
