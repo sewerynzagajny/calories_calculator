@@ -142,6 +142,17 @@ body {
   font-style: italic;
 }
 
+%popup-backgruond {
+  position: fixed;
+  background-color: rgb(0, 0, 0, 0.3);
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+  z-index: 99999;
+  height: 100vh;
+  width: 100vw;
+  animation: showUp 0.3s ease-in-out;
+}
+
 ////////////////////////////////////////////////////////////////////////
 
 @mixin input_item($time-animation, $button-gap, $padding-bottom, $margin) {
@@ -441,17 +452,10 @@ body {
 /////////////////////////////////////////////////////
 
 .popup {
-  position: fixed;
-  background-color: rgb(0, 0, 0, 0.3);
-  backdrop-filter: blur(0.5rem);
-  -webkit-backdrop-filter: blur(0.5rem);
-  z-index: 99999;
-  height: 100vh;
-  width: 100vw;
+  @extend %popup-backgruond;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  animation: showUp 0.3s ease-in-out;
 
   &__content {
     background-color: $font-color-secondary;
@@ -471,15 +475,7 @@ body {
 /////////////////////////////////////////////////////
 
 .popup_total {
-  position: fixed;
-  background-color: rgb(0, 0, 0, 0.3);
-  backdrop-filter: blur(0.5rem);
-  -webkit-backdrop-filter: blur(0.5rem);
-  z-index: 99999;
-  height: 100vh;
-  width: 100vw;
-
-  animation: showUp 0.3s ease-in-out;
+  @extend %popup-backgruond;
 
   &__content {
     background-color: $font-color-secondary;
