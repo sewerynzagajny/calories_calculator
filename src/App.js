@@ -47,6 +47,11 @@ export default function App() {
   const [showKcalButtons, setShowKcalButtons] = useState(false);
   const [dataKcalLoaded, setDataKcalLoaded] = useState(false);
   const [selectedKcalItemId, setSelectedKcalItemId] = useState(null);
+  // const [showKcalDetails, setShowKcalDetails] = useState({});
+  const [showKcalDetails, setShowKcalDetails] = useState(() => {
+    const storedKcalDetails = localStorage.getItem("kcalDetails");
+    return storedKcalDetails ? JSON.parse(storedKcalDetails) : {};
+  });
 
   const [loading, setLoading] = useState(false);
 
@@ -136,7 +141,7 @@ export default function App() {
   }
 
   function handleDeleteKcalItem(id) {
-    const container = document.querySelector(".kcal-items__kcal-list");
+    const container = document.querySelector(".kcal__items__kcal-list");
     setKcalItems((kcalItems) => kcalItems.filter((item) => item.id !== id));
     setSelectedKcalItemId(null);
     if (kcalItems.length === 1) {
@@ -183,7 +188,7 @@ export default function App() {
   }
 
   function handleClearKcalList() {
-    const container = document.querySelector(".kcal-items__kcal-list");
+    const container = document.querySelector(".kcal__items__kcal-list");
     const confirmed = window.confirm(
       "Czy na pewno chcesz usunąć listę z wynikami?"
     );
@@ -363,6 +368,10 @@ export default function App() {
     }
   }, [kcalItems, dataKcalLoaded]);
 
+  useEffect(() => {
+    localStorage.setItem("kcalDetails", JSON.stringify(showKcalDetails));
+  }, [showKcalDetails]);
+
   return (
     <div className="app">
       {delayedVisibility && (
@@ -423,6 +432,8 @@ export default function App() {
             onDeleteKcalItem={handleDeleteKcalItem}
             loading={loading}
             onShowTotal={handleShowTotal}
+            showKcalDetails={showKcalDetails}
+            setShowKcalDetails={setShowKcalDetails}
           />
           <Footer />
           {popupVisible && (
@@ -800,6 +811,8 @@ function KcalOutputList({
   onDeleteKcalItem,
   loading,
   onShowTotal,
+  showKcalDetails,
+  setShowKcalDetails,
 }) {
   const prevFoodItemsLength = useRef(foodItems.length);
   const prevKcalItemsLength = useRef(kcalItems.length);
@@ -807,7 +820,7 @@ function KcalOutputList({
   const hasSelectedKcalItem = selectedKcalItemId !== null;
 
   useEffect(() => {
-    const elements = document.querySelectorAll(".kcal-item");
+    const elements = document.querySelectorAll(".kcal");
     if (foodItems.length !== prevFoodItemsLength.current) {
       if (foodItems.length === 0 && prevFoodItemsLength.current > 0) {
         // Usunięto ostatni element lub wszystkie elementy z foodItems
@@ -859,14 +872,14 @@ function KcalOutputList({
   }, [dataLoaded]);
 
   return (
-    <div className="kcal-items">
+    <div className="kcal__items">
       <div
-        className="kcal-items__kcal-list"
+        className="kcal__items__kcal-list"
         style={{ height: containerKcalHeight }}
       >
         <ul
           ref={elementRef}
-          className={`kcal-items__kcal-list--list ${
+          className={`kcal__items__kcal-list--list ${
             hasSelectedKcalItem ? "has-selected-item" : ""
           }`}
         >
@@ -883,6 +896,8 @@ function KcalOutputList({
                 setShowKcalButtons={setShowKcalButtons}
                 loading={loading}
                 kcalItems={kcalItems}
+                showKcalDetails={showKcalDetails}
+                setShowKcalDetails={setShowKcalDetails}
               />
             ))
             .reverse()}
@@ -890,7 +905,7 @@ function KcalOutputList({
       </div>
       {showKcalButtons && (
         <div
-          className={`kcal-items__action ${
+          className={`kcal__items__action ${
             !kcalItems.length ? "move-out" : ""
           }`}
         >
@@ -930,8 +945,12 @@ function KcalOutputLItem({
   setShowKcalButtons,
   loading,
   kcalItems,
+  showKcalDetails,
+  setShowKcalDetails,
 }) {
   const isKcalSelected = selectedKcalItemId === kcalItem.id;
+  const isKcalDetailsSelected = showKcalDetails[kcalItem.id];
+
   const elementRef = useRef(null);
 
   function handleClickKcalItem(e) {
@@ -953,11 +972,18 @@ function KcalOutputLItem({
     }, 1);
   }
 
+  function handleToggleKcalDetails() {
+    setShowKcalDetails((prev) => ({
+      ...prev,
+      [kcalItem.id]: !prev[kcalItem.id],
+    }));
+  }
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (
         elementRef.current &&
-        !e.target.classList.contains("kcal-item__btn--action") &&
+        !e.target.classList.contains("kcal__item__btn--action") &&
         !elementRef.current.contains(e.target)
       ) {
         if (isKcalSelected) {
@@ -984,50 +1010,72 @@ function KcalOutputLItem({
   }, [isKcalSelected, onSelectedKcalItem]);
 
   return (
-    <li className={`kcal-item ${isKcalSelected ? "selected" : ""}`}>
-      <ul ref={elementRef} onClick={!loading ? handleClickKcalItem : null}>
-        <li>
-          <span className="kcal-item__food">{kcalItem.food}</span>
-        </li>
-        <li>
-          <span className="kcal-item__food">
-            {" "}
-            Kalorie:{" "}
-            <span className="kcal-item__value">{kcalItem.calories} kcal</span>
-          </span>
-        </li>
-        <li>
-          <span className="kcal-item__food">
-            Tłuszcze: <span className="kcal-item__value">{kcalItem.fat} g</span>
-          </span>
-        </li>
-        <li>
-          <span className="kcal-item__food">
-            Węglowodany:{" "}
-            <span className="kcal-item__value">{kcalItem.carbohydrates} g</span>
-          </span>
-        </li>
-        <li>
-          <span className="kcal-item__food">
-            Białko:{" "}
-            <span className="kcal-item__value">{kcalItem.protein} g</span>
-          </span>
-        </li>
-      </ul>
-      {isKcalSelected && (
-        <div
-          className="kcal-item__btn"
-          style={{ top: cursorPosition.y, left: cursorPosition.x }}
-        >
-          <button
-            className="kcal-item__btn--action"
-            onClick={handleDeleteKcalItemEffect}
+    <div className="kcal">
+      <div
+        className={`kcal__icon ${isKcalSelected ? "selected" : ""}`}
+        onClick={handleToggleKcalDetails}
+      >
+        {/* {isKcalDetailsSelected ? "▼" : "▲"} */}
+        <span className={isKcalDetailsSelected ? "rotate-90" : "rotate-270"}>
+          {">"}
+        </span>
+      </div>
+      <li className={`kcal__item ${isKcalSelected ? "selected" : ""}`}>
+        <ul ref={elementRef} onClick={!loading ? handleClickKcalItem : null}>
+          <li>
+            <span className="kcal__item__food">{kcalItem.food}</span>
+          </li>
+          {isKcalDetailsSelected || (
+            <>
+              <li>
+                <span className="kcal__item__food">
+                  {" "}
+                  Kalorie:{" "}
+                  <span className="kcal__item__value">
+                    {kcalItem.calories} kcal
+                  </span>
+                </span>
+              </li>
+              <li>
+                <span className="kcal__item__food">
+                  Tłuszcze:{" "}
+                  <span className="kcal__item__value">{kcalItem.fat} g</span>
+                </span>
+              </li>
+              <li>
+                <span className="kcal__item__food">
+                  Węglowodany:{" "}
+                  <span className="kcal__item__value">
+                    {kcalItem.carbohydrates} g
+                  </span>
+                </span>
+              </li>
+              <li>
+                <span className="kcal__item__food">
+                  Białko:{" "}
+                  <span className="kcal__item__value">
+                    {kcalItem.protein} g
+                  </span>
+                </span>
+              </li>
+            </>
+          )}
+        </ul>
+        {isKcalSelected && (
+          <div
+            className="kcal__item__btn"
+            style={{ top: cursorPosition.y, left: cursorPosition.x }}
           >
-            Usuń
-          </button>
-        </div>
-      )}
-    </li>
+            <button
+              className="kcal__item__btn--action"
+              onClick={handleDeleteKcalItemEffect}
+            >
+              Usuń
+            </button>
+          </div>
+        )}
+      </li>
+    </div>
   );
 }
 

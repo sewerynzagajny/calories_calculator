@@ -219,7 +219,7 @@ body {
   }
 }
 
-@mixin items-list($name-items, $name-list, $ul_margin-button) {
+@mixin items-list($name-items, $name-list, $ul_margin-button, $width) {
   .#{$name-items} {
     display: flex;
     flex-direction: column;
@@ -230,7 +230,7 @@ body {
 
     &__#{$name-list} {
       // width: 30%; //small-scr
-      width: 92rem;
+      width: $width;
       // overflow: scroll;
       // overflow-y: auto;
       // overflow-x: hidden;
@@ -310,6 +310,16 @@ body {
   animation: moveInBotton 0.5s backwards ease-in-out 1s;
 }
 
+.rotate-90 {
+  display: inline-block;
+  transform: rotate(90deg);
+}
+
+.rotate-270 {
+  display: inline-block;
+  transform: rotate(270deg);
+}
+
 .app {
   min-height: 100vh;
   margin: 0 auto;
@@ -339,7 +349,7 @@ body {
 
 ///////////////////////////////////////////////////////////////
 ///food-items
-@include items-list("food-items", "food-list", 0);
+@include items-list("food-items", "food-list", 0, 92rem);
 
 ///////////////////////////////////////////////////////////////
 
@@ -391,59 +401,80 @@ body {
   }
 }
 /////////////////////////////////////////////////////
-///kcal-items
-@include items-list("kcal-items", "kcal-list", 2.8rem);
+///kcal__items
+@include items-list("kcal__items", "kcal-list", 2.8rem, 98.2rem);
 
-.kcal-items__kcal-list--list:last-child {
+.kcal__items__kcal-list--list:last-child {
   margin-bottom: -1.8rem;
 }
 
 /////////////////////////////////////////////////////
-//kcal-item
+//kcal
 
-.kcal-item {
-  color: $font-color-primary;
-  transition: all 0.3s;
-  &.selected {
+.kcal {
+  display: flex;
+  gap: 1.2rem;
+
+  &__icon {
+    margin-top: 0.3rem;
+    font-size: 2rem;
+    cursor: pointer;
     color: $font-color-primary;
-  }
-  .has-selected-item & {
-    &:not(.selected) {
-      color: $font-color-primary-dark;
+    transition: all 0.3s;
+    &.selected {
+      color: $font-color-primary;
+    }
+    .has-selected-item & {
+      &:not(.selected) {
+        color: $font-color-primary-dark;
+      }
     }
   }
 
-  & li:first-child {
-    margin-bottom: 0.8rem;
-  }
+  &__item {
+    color: $font-color-primary;
+    transition: all 0.3s;
+    &.selected {
+      color: $font-color-primary;
+    }
+    .has-selected-item & {
+      &:not(.selected) {
+        color: $font-color-primary-dark;
+      }
+    }
 
-  &__value {
-    @extend %strong-style;
-  }
+    & li:first-child {
+      margin-bottom: 0.8rem;
+    }
 
-  &__btn {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    display: flex;
-    gap: 1.8rem;
+    &__value {
+      @extend %strong-style;
+    }
 
-    &--action {
-      color: $font-color-secondary;
-      background-color: $color-blue;
-      border: none;
-      border-radius: 10rem;
-      font-family: inherit;
-      cursor: pointer;
-      font-weight: 700;
-      padding: 0.4rem 1.4rem;
-      font-size: 1.6rem;
-      box-shadow: 0 1rem 2rem rgba($color-black, 0.2);
-      animation: showUp 0.16s backwards ease-in-out;
-      transition: all 0.3s;
-      &:active {
-        transform: translateY(0.1rem);
-        box-shadow: 0 0.5rem 1rem rgba($color-black, 0.2);
+    &__btn {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      display: flex;
+      gap: 1.8rem;
+
+      &--action {
+        color: $font-color-secondary;
+        background-color: $color-blue;
+        border: none;
+        border-radius: 10rem;
+        font-family: inherit;
+        cursor: pointer;
+        font-weight: 700;
+        padding: 0.4rem 1.4rem;
+        font-size: 1.6rem;
+        box-shadow: 0 1rem 2rem rgba($color-black, 0.2);
+        animation: showUp 0.16s backwards ease-in-out;
+        transition: all 0.3s;
+        &:active {
+          transform: translateY(0.1rem);
+          box-shadow: 0 0.5rem 1rem rgba($color-black, 0.2);
+        }
       }
     }
   }
