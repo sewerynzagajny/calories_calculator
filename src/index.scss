@@ -415,6 +415,19 @@ body {
   display: flex;
   gap: 1.2rem;
 
+  &__details {
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out;
+  }
+
+  &__details--collapsed {
+    max-height: 3rem;
+  }
+
+  &__details--expanded {
+    max-height: 50rem; /* Ustaw odpowiednią maksymalną wysokość */
+  }
+
   &__icon {
     margin-top: 0.3rem;
     font-size: 2rem;

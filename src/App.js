@@ -1016,50 +1016,52 @@ function KcalOutputLItem({
         onClick={handleToggleKcalDetails}
       >
         {/* {isKcalDetailsSelected ? "▼" : "▲"} */}
-        <span className={isKcalDetailsSelected ? "rotate-90" : "rotate-270"}>
+        <span className={isKcalDetailsSelected ? "rotate-270" : "rotate-90"}>
           {">"}
         </span>
       </div>
       <li className={`kcal__item ${isKcalSelected ? "selected" : ""}`}>
-        <ul ref={elementRef} onClick={!loading ? handleClickKcalItem : null}>
+        <ul
+          ref={elementRef}
+          onClick={!loading ? handleClickKcalItem : null}
+          className={`kcal__details ${
+            !isKcalDetailsSelected
+              ? "kcal__details--expanded"
+              : "kcal__details--collapsed"
+          }`}
+        >
           <li>
             <span className="kcal__item__food">{kcalItem.food}</span>
           </li>
-          {isKcalDetailsSelected || (
-            <>
-              <li>
-                <span className="kcal__item__food">
-                  {" "}
-                  Kalorie:{" "}
-                  <span className="kcal__item__value">
-                    {kcalItem.calories} kcal
-                  </span>
-                </span>
-              </li>
-              <li>
-                <span className="kcal__item__food">
-                  Tłuszcze:{" "}
-                  <span className="kcal__item__value">{kcalItem.fat} g</span>
-                </span>
-              </li>
-              <li>
-                <span className="kcal__item__food">
-                  Węglowodany:{" "}
-                  <span className="kcal__item__value">
-                    {kcalItem.carbohydrates} g
-                  </span>
-                </span>
-              </li>
-              <li>
-                <span className="kcal__item__food">
-                  Białko:{" "}
-                  <span className="kcal__item__value">
-                    {kcalItem.protein} g
-                  </span>
-                </span>
-              </li>
-            </>
-          )}
+          <li>
+            <span className="kcal__item__food">
+              {" "}
+              Kalorie:{" "}
+              <span className="kcal__item__value">
+                {kcalItem.calories} kcal
+              </span>
+            </span>
+          </li>
+          <li>
+            <span className="kcal__item__food">
+              Tłuszcze:{" "}
+              <span className="kcal__item__value">{kcalItem.fat} g</span>
+            </span>
+          </li>
+          <li>
+            <span className="kcal__item__food">
+              Węglowodany:{" "}
+              <span className="kcal__item__value">
+                {kcalItem.carbohydrates} g
+              </span>
+            </span>
+          </li>
+          <li>
+            <span className="kcal__item__food">
+              Białko:{" "}
+              <span className="kcal__item__value">{kcalItem.protein} g</span>
+            </span>
+          </li>
         </ul>
         {isKcalSelected && (
           <div
