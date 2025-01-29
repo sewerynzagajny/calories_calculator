@@ -155,7 +155,17 @@ export default function App() {
   function handleEditItem(id, e) {
     const item = foodItems.find((item) => item.id === id);
     setItemToEdit(item);
-    setCursorPosition({ x: 0, y: e.clientY });
+    let cursorY = e.clientY;
+    const mediaQuery = window.matchMedia("(max-width: 992px)");
+    if (mediaQuery.matches) {
+      if (cursorY < 65) {
+        cursorY += 120;
+      } else cursorY += 50;
+    } else if (cursorY < 40) {
+      cursorY += 30;
+    }
+
+    setCursorPosition({ x: 0, y: cursorY });
     setPopupVisible(true);
     setOriginalItem({ ...item });
   }
@@ -877,7 +887,7 @@ function KcalOutputList({
         className="kcal__items__kcal-list"
         style={{ height: containerKcalHeight }}
       >
-        <ul
+        <div
           ref={elementRef}
           className={`kcal__items__kcal-list--list ${
             hasSelectedKcalItem ? "has-selected-item" : ""
@@ -901,7 +911,7 @@ function KcalOutputList({
               />
             ))
             .reverse()}
-        </ul>
+        </div>
       </div>
       {showKcalButtons && (
         <div
@@ -952,6 +962,7 @@ function KcalOutputLItem({
   const isKcalDetailsSelected = showKcalDetails[kcalItem.id];
 
   const elementRef = useRef(null);
+  const kcalItemRef = useRef(null);
 
   function handleClickKcalItem(e) {
     if (e.target.tagName === "SPAN") {
@@ -1009,6 +1020,31 @@ function KcalOutputLItem({
     };
   }, [isKcalSelected, onSelectedKcalItem]);
 
+  useEffect(() => {
+    const updateHeight = () => {
+      if (kcalItemRef.current) {
+        requestAnimationFrame(() => {
+          const height = kcalItemRef.current.offsetHeight;
+          elementRef.current.style.setProperty(
+            "--collapsed-height",
+            `${height}px`
+          );
+        });
+      }
+    };
+
+    updateHeight();
+
+    window.addEventListener("resize", updateHeight); // Dodaj nasłuchiwanie na zdarzenie zmiany rozmiaru
+    const currentElement = elementRef.current;
+    currentElement.addEventListener("transitionend", updateHeight); // Dodaj nasłuchiwanie na zdarzenie zakończenia animacji
+
+    return () => {
+      window.removeEventListener("resize", updateHeight); // Usuń nasłuchiwanie przy odmontowaniu komponentu
+      currentElement.removeEventListener("transitionend", updateHeight); // Usuń nasłuchiwanie przy odmontowaniu komponentu
+    };
+  }, []);
+
   return (
     <div className="kcal">
       <div
@@ -1020,63 +1056,67 @@ function KcalOutputLItem({
           {">"}
         </span>
       </div>
-      <li className={`kcal__item ${isKcalSelected ? "selected" : ""}`}>
-        <ul
-          ref={elementRef}
-          onClick={!loading ? handleClickKcalItem : null}
-          className={`kcal__details ${
-            !isKcalDetailsSelected
-              ? "kcal__details--expanded"
-              : "kcal__details--collapsed"
-          }`}
-        >
-          <li>
-            <span className="kcal__item__food">{kcalItem.food}</span>
-          </li>
-          <li>
-            <span className="kcal__item__food">
-              {" "}
-              Kalorie:{" "}
-              <span className="kcal__item__value">
-                {kcalItem.calories} kcal
-              </span>
-            </span>
-          </li>
-          <li>
-            <span className="kcal__item__food">
-              Tłuszcze:{" "}
-              <span className="kcal__item__value">{kcalItem.fat} g</span>
-            </span>
-          </li>
-          <li>
-            <span className="kcal__item__food">
-              Węglowodany:{" "}
-              <span className="kcal__item__value">
-                {kcalItem.carbohydrates} g
-              </span>
-            </span>
-          </li>
-          <li>
-            <span className="kcal__item__food">
-              Białko:{" "}
-              <span className="kcal__item__value">{kcalItem.protein} g</span>
-            </span>
-          </li>
-        </ul>
-        {isKcalSelected && (
-          <div
-            className="kcal__item__btn"
-            style={{ top: cursorPosition.y, left: cursorPosition.x }}
+      <ul>
+        <li className={`kcal__item ${isKcalSelected ? "selected" : ""}`}>
+          <ul
+            ref={elementRef}
+            onClick={!loading ? handleClickKcalItem : null}
+            className={`kcal__details ${
+              !isKcalDetailsSelected
+                ? "kcal__details--expanded"
+                : "kcal__details--collapsed"
+            }`}
           >
-            <button
-              className="kcal__item__btn--action"
-              onClick={handleDeleteKcalItemEffect}
+            <li>
+              <span ref={kcalItemRef} className="kcal__item__food">
+                {kcalItem.food}
+              </span>
+            </li>
+            <li>
+              <span className="kcal__item__food">
+                {" "}
+                Kalorie:{" "}
+                <span className="kcal__item__value">
+                  {kcalItem.calories} kcal
+                </span>
+              </span>
+            </li>
+            <li>
+              <span className="kcal__item__food">
+                Tłuszcze:{" "}
+                <span className="kcal__item__value">{kcalItem.fat} g</span>
+              </span>
+            </li>
+            <li>
+              <span className="kcal__item__food">
+                Węglowodany:{" "}
+                <span className="kcal__item__value">
+                  {kcalItem.carbohydrates} g
+                </span>
+              </span>
+            </li>
+            <li>
+              <span className="kcal__item__food">
+                Białko:{" "}
+                <span className="kcal__item__value">{kcalItem.protein} g</span>
+              </span>
+            </li>
+          </ul>
+          {isKcalSelected && (
+            <div
+              className="kcal__item__btn"
+              style={{ top: cursorPosition.y, left: cursorPosition.x }}
             >
-              Usuń
-            </button>
-          </div>
-        )}
-      </li>
+              <button
+                className="kcal__item__btn--action"
+                onClick={handleDeleteKcalItemEffect}
+              >
+                Usuń
+              </button>
+            </div>
+          )}
+        </li>
+      </ul>
     </div>
   );
 }
@@ -1084,7 +1124,7 @@ function KcalOutputLItem({
 function Footer() {
   return (
     <footer className="copyright">
-      <p>Aplikacja wykorzystuje OpenAI.</p>
+      <p>The app uses OpenAI.</p>
       <p>
         Copyright &copy; <span>{new Date().getFullYear()}</span> by Seweryn
         Zagajny. <br />
