@@ -135,6 +135,15 @@ body {
   // position: relative;
   background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
     url(body.webp);
+
+  @media only screen and (max-width: $bp-medium) {
+    background-image: linear-gradient(
+        rgb(34, 34, 34, 0.6),
+        rgb(34, 34, 34, 0.6)
+      ),
+      url(body-small.webp);
+    background-position: center;
+  }
   background-size: cover;
   background-repeat: no-repeat;
   // background-position: center;

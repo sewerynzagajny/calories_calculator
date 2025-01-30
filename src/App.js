@@ -405,6 +405,7 @@ export default function App() {
             loading={loading}
             setShowKcalButtons={setShowKcalButtons}
             kcalItems={kcalItems}
+            foodItems={foodItems}
           />
           <FoodItemsList
             foodItems={foodItems}
@@ -505,10 +506,15 @@ function AddItemForm({
   loading,
   setShowKcalButtons,
   kcalItems,
+  foodItems,
 }) {
   function handleSubmit(e) {
     e.preventDefault();
     if (!food || !quantity) return alert("Wypełnij własciwie wszystkie pola!");
+    if (foodItems.length === 10)
+      return alert(
+        "Możesz za każdym razem dodać tylko 10 pozycji! Usuń niepotrzebne pozycje, albo oszacuj dodane!"
+      );
 
     const id = crypto.randomUUID();
     const newFoodItem = {
@@ -606,6 +612,10 @@ function FoodItemsList({
   const elementRef = useRef(null);
 
   function getAIanswer() {
+    if (kcalItems.length === 20)
+      return alert(
+        "Lista kcal moze skladać sie maskymalnie z 40 pozycji! Skasuj niepotrzebne aby dodać nowe!"
+      );
     setLoading(true);
     onEstimate();
     setShowKcalButtons(true);
