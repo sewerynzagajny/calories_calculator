@@ -271,7 +271,8 @@ export default function App() {
       .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
       .join("; ")
       .trim();
-    const estimateText = `Oszacuj kaloryczność i makroskładniki dla: ${foodItemString}. Zwróć wynik bez żadnych opisów i komentarzy tylko w formacie JSON z kluczami: calories, protein, fat, carbohydrates. Jeśli nie rozpoznajesz chociażby jednego składnika lub dania to nie sugeruj co to jest a tylko zwróć sumacyjny wynik jako klucze z wartoscią -1`;
+    // const estimateText = `Oszacuj kaloryczność i makroskładniki dla: ${foodItemString}. Zwróć wynik bez żadnych opisów i komentarzy tylko w formacie JSON z kluczami: calories, protein, fat, carbohydrates. Jeśli jest wątpliwość, literówka co do nazwy chociażby jednego składnika lub dania to nie sugeruj co to jest a tylko zwróć ostatecznie klucze wszędzie z wartoscią -1`;
+    const estimateText = `Oszacuj kaloryczność i makroskładniki dla: ${foodItemString}. Odpowiedz w JSON {calories, protein, fat, carbohydrates}. Jeśli składnik jest niejasny, zawiera literówkę lub jest niezidentyfikowany, zwróć tylko bez komantarza, bez przeprosin {"calories": -1, "protein": -1, "fat": -1, "carbohydrates": -1}`;
 
     const dataInput = {
       model,
@@ -287,6 +288,8 @@ export default function App() {
       const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
       const output = response.choices[0].message.content;
       const dataOutput = JSON.parse(output);
+      console.log(output);
+      console.log(dataOutput);
       if (
         dataOutput.calories === -1 ||
         dataOutput.protein === -1 ||
@@ -331,6 +334,11 @@ export default function App() {
         setContainerHeight("auto");
         setLoading(false);
       }, 270);
+      setShowKcalButtons(true);
+      if (kcalItems.length) setShowKcalButtons(false);
+      setTimeout(() => {
+        setShowKcalButtons(true);
+      }, 1);
     } catch (error) {
       console.error("Error fetching estimate:", error);
     }
@@ -632,11 +640,6 @@ function FoodItemsList({
       );
     setLoading(true);
     onEstimate();
-    setShowKcalButtons(true);
-    if (kcalItems.length) setShowKcalButtons(false);
-    setTimeout(() => {
-      setShowKcalButtons(true);
-    }, 1);
   }
 
   useEffect(() => {
@@ -950,6 +953,7 @@ function KcalOutputList({
                 : "",
             }}
             onClick={onShowTotal}
+            loading={loading}
           >
             Suma
           </Button>
@@ -960,6 +964,7 @@ function KcalOutputList({
                 : "",
             }}
             onClick={onClearKcalList}
+            loading={loading}
           >
             Usuń listę kcal
           </Button>
