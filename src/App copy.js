@@ -285,44 +285,44 @@ export default function App() {
     };
 
     try {
-      const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
-      const output = response.choices[0].message.content;
-      const dataOutput = JSON.parse(output);
-      console.log(output);
-      console.log(dataOutput);
-      if (
-        dataOutput.calories === -1 ||
-        dataOutput.protein === -1 ||
-        dataOutput.fat === -1 ||
-        dataOutput.carbohydrates === -1
-      ) {
-        setLoading(false);
-        setTimeout(() => {
-          alert(
-            "Nie rozpoznano składnika lub dania, popraw i spróbuj ponownie!"
-          );
-        }, 270);
-        return;
-      }
+      // const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
+      // const output = response.choices[0].message.content;
+      // const dataOutput = JSON.parse(output);
+      // console.log(output);
+      // console.log(dataOutput);
+      // if (
+      //   dataOutput.calories === -1 ||
+      //   dataOutput.protein === -1 ||
+      //   dataOutput.fat === -1 ||
+      //   dataOutput.carbohydrates === -1
+      // ) {
+      //   setLoading(false);
+      //   setTimeout(() => {
+      //     alert(
+      //       "Nie rozpoznano składnika lub dania, popraw i spróbuj ponownie!"
+      //     );
+      //   }, 270);
+      //   return;
+      // }
       const id = crypto.randomUUID();
-      const newKcalItem = {
-        id,
-        food: foodItemString,
-        calories: dataOutput.calories,
-        fat: dataOutput.fat,
-        carbohydrates: dataOutput.carbohydrates,
-        protein: dataOutput.protein,
-      };
-
       // const newKcalItem = {
       //   id,
       //   food: foodItemString,
-      //   calories: "100",
-      //   fat: "10",
-      //   carbohydrates: "15",
-      //   protein: "20",
+      //   calories: dataOutput.calories,
+      //   fat: dataOutput.fat,
+      //   carbohydrates: dataOutput.carbohydrates,
+      //   protein: dataOutput.protein,
       // };
-      // console.log("test");
+
+      const newKcalItem = {
+        id,
+        food: foodItemString,
+        calories: "100",
+        fat: "10",
+        carbohydrates: "15",
+        protein: "20",
+      };
+      console.log("test");
 
       // if (containerRef.current) {
       //   setContainerHeight(containerRef.current.offsetHeight + "px");
@@ -330,15 +330,15 @@ export default function App() {
       handleAddKcalItems(newKcalItem);
       setContainerHeight(container.offsetHeight + "px");
       setFoodItems([]);
-      setLoading(false);
       setTimeout(() => {
         setContainerHeight("auto");
+        setLoading(false);
       }, 270);
-      setShowKcalButtons(true);
-      if (kcalItems.length) setShowKcalButtons(false);
-      setTimeout(() => {
-        setShowKcalButtons(true);
-      }, 1);
+      // setShowKcalButtons(true);
+      // if (kcalItems.length) setShowKcalButtons(false);
+      // setTimeout(() => {
+      //   setShowKcalButtons(true);
+      // }, 1);
     } catch (error) {
       console.error("Error fetching estimate:", error);
     }
