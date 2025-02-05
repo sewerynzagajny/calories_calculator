@@ -57,8 +57,7 @@ export default function App() {
 
   const apiKey = process.env.REACT_APP_API_KEY;
   const apiURL = "https://api.openai.com/v1/chat/completions";
-  // const model = "gpt-3.5-turbo";
-  const model = "gpt-4";
+  const model = "gpt-3.5-turbo";
   const [sum, setSum] = useState({});
 
   function Timeout(s) {
@@ -235,16 +234,7 @@ export default function App() {
       (charCode >= 96 && charCode <= 105)
     ) {
       e.preventDefault();
-      alert("Wpisz ilość w innym polu.");
-      inputRef.current.blur();
-    }
-  }
-
-  function handlePaste(e) {
-    const paste = e.clipboardData?.getData("text");
-    if (paste && /\d/.test(paste)) {
-      e.preventDefault();
-      alert("Wklej treść bez liczb a ilość wpisz w innym polu.");
+      alert("Wpisz ilość w innym polu!");
       inputRef.current.blur();
     }
   }
@@ -281,7 +271,8 @@ export default function App() {
       .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
       .join("; ")
       .trim();
-    const estimateText = `Oszacuj razem kaloryczność i makroskładniki dla: ${foodItemString}. Odpowiedz tylko w JSON {calories, protein, fat, carbohydrates}, bez komentarzy, sugestii. Jeśli co najmniej jeden składnik jest niejasny, nie nadaje się do spożycia, odpowiedz -1.`;
+    // const estimateText = `Oszacuj kaloryczność i makroskładniki dla: ${foodItemString}. Zwróć wynik bez żadnych opisów i komentarzy tylko w formacie JSON z kluczami: calories, protein, fat, carbohydrates. Jeśli jest wątpliwość, literówka co do nazwy chociażby jednego składnika lub dania to nie sugeruj co to jest a tylko zwróć ostatecznie klucze wszędzie z wartoscią -1`;
+    const estimateText = `Oszacuj kaloryczność i makroskładniki dla: ${foodItemString}. Odpowiedz w JSON {calories, protein, fat, carbohydrates}. Jeśli składnik jest niejasny, zawiera literówkę lub jest niezidentyfikowany, zwróć tylko bez komantarza, bez przeprosin {"calories": -1, "protein": -1, "fat": -1, "carbohydrates": -1}`;
 
     const dataInput = {
       model,
@@ -294,38 +285,44 @@ export default function App() {
     };
 
     try {
-      const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
-      const output = response.choices[0].message.content;
-      if (output === "-1") {
-        setLoading(false);
-        setTimeout(() => {
-          alert(
-            "Nie rozpoznano składnika lub dania. Popraw i spróbuj ponownie."
-          );
-        }, 270);
-        return;
-      }
-      const dataOutput = JSON.parse(output);
-
+      // const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
+      // const output = response.choices[0].message.content;
+      // const dataOutput = JSON.parse(output);
+      // console.log(output);
+      // console.log(dataOutput);
+      // if (
+      //   dataOutput.calories === -1 ||
+      //   dataOutput.protein === -1 ||
+      //   dataOutput.fat === -1 ||
+      //   dataOutput.carbohydrates === -1
+      // ) {
+      //   setLoading(false);
+      //   setTimeout(() => {
+      //     alert(
+      //       "Nie rozpoznano składnika lub dania, popraw i spróbuj ponownie!"
+      //     );
+      //   }, 270);
+      //   return;
+      // }
       const id = crypto.randomUUID();
-      const newKcalItem = {
-        id,
-        food: foodItemString,
-        calories: dataOutput.calories,
-        fat: dataOutput.fat,
-        carbohydrates: dataOutput.carbohydrates,
-        protein: dataOutput.protein,
-      };
-
       // const newKcalItem = {
       //   id,
       //   food: foodItemString,
-      //   calories: "100",
-      //   fat: "10",
-      //   carbohydrates: "15",
-      //   protein: "20",
+      //   calories: dataOutput.calories,
+      //   fat: dataOutput.fat,
+      //   carbohydrates: dataOutput.carbohydrates,
+      //   protein: dataOutput.protein,
       // };
-      // console.log("test");
+
+      const newKcalItem = {
+        id,
+        food: foodItemString,
+        calories: "100",
+        fat: "10",
+        carbohydrates: "15",
+        protein: "20",
+      };
+      console.log("test");
 
       // if (containerRef.current) {
       //   setContainerHeight(containerRef.current.offsetHeight + "px");
@@ -333,15 +330,15 @@ export default function App() {
       handleAddKcalItems(newKcalItem);
       setContainerHeight(container.offsetHeight + "px");
       setFoodItems([]);
-      setLoading(false);
       setTimeout(() => {
         setContainerHeight("auto");
+        setLoading(false);
       }, 270);
-      setShowKcalButtons(true);
-      if (kcalItems.length) setShowKcalButtons(false);
-      setTimeout(() => {
-        setShowKcalButtons(true);
-      }, 1);
+      // setShowKcalButtons(true);
+      // if (kcalItems.length) setShowKcalButtons(false);
+      // setTimeout(() => {
+      //   setShowKcalButtons(true);
+      // }, 1);
     } catch (error) {
       console.error("Error fetching estimate:", error);
     }
@@ -415,7 +412,6 @@ export default function App() {
           <AddItemForm
             onAddItems={handleAddItems}
             onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
             onQuantity={handleQuantity}
             food={food}
             setFood={setFood}
@@ -477,7 +473,6 @@ export default function App() {
             <Popup
               onAddItems={handleAddItems}
               onKeyDown={handleKeyDown}
-              onPaste={handlePaste}
               setPopupVisible={setPopupVisible}
               cursorPosition={cursorPosition}
               itemToEdit={itemToEdit}
@@ -518,7 +513,6 @@ function Headline() {
 function AddItemForm({
   onAddItems,
   onKeyDown,
-  onPaste,
   onQuantity,
   food,
   setFood,
@@ -536,60 +530,18 @@ function AddItemForm({
   kcalItems,
   foodItems,
 }) {
-  const [foodCorrected, setFoodCorrected] = useState("");
-  const workerRef = useRef(null);
-  const timeoutRef = useRef(null);
-
-  useEffect(() => {
-    if (!workerRef.current) {
-      workerRef.current = new Worker(
-        new URL("./workers/spellWorker.js", import.meta.url)
-      );
-
-      workerRef.current.onmessage = (event) => {
-        console.log("Otrzymano wiadomość od workera:", event.data);
-        if (event.data.result) {
-          setFoodCorrected(event.data.result);
-        } else if (event.data.error) {
-          console.error(event.data.error);
-        }
-      };
-
-      workerRef.current.onerror = (error) => {
-        console.error("Worker crashed:", error);
-        workerRef.current.terminate();
-        workerRef.current = null;
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    if (food.length === 0) return;
-
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      if (workerRef.current) {
-        console.log("Wysyłanie wiadomości do workera:", food);
-        workerRef.current.postMessage({ text: food });
-      }
-    }, 500);
-  }, [food]);
-
   function handleSubmit(e) {
     e.preventDefault();
-    if (!food || !quantity) return alert("Wypełnij własciwie wszystkie pola.");
+    if (!food || !quantity) return alert("Wypełnij własciwie wszystkie pola!");
     if (foodItems.length === 10)
       return alert(
-        "Możesz za każdym razem dodać tylko 10 pozycji. Usuń niepotrzebne pozycje, albo oszacuj dodane."
+        "Możesz za każdym razem dodać tylko 10 pozycji! Usuń niepotrzebne pozycje, albo oszacuj dodane!"
       );
-    if (foodCorrected === -1) {
-      return alert("Znaleziono błędy w tekście. Proszę poprawić.");
-    }
 
     const id = crypto.randomUUID();
     const newFoodItem = {
       id,
-      food: foodCorrected[0].toUpperCase() + foodCorrected.slice(1),
+      food: food[0].toUpperCase() + food.slice(1),
       quantity,
       unit,
     };
@@ -616,7 +568,6 @@ function AddItemForm({
         value={food}
         onChange={(e) => setFood(e.target.value)}
         onKeyDown={onKeyDown}
-        onPaste={onPaste}
         ref={inputRef}
         {...(!isCheck && { onClick: onClick })}
         onFocus={onFocus}
@@ -1214,7 +1165,6 @@ function Footer() {
 
 function Popup({
   onKeyDown,
-  onPaste,
   setPopupVisible,
   cursorPosition,
   itemToEdit,
@@ -1230,46 +1180,6 @@ function Popup({
 }) {
   const popupRef = useRef(null);
 
-  const [foodEditCorrected, setFoodEditCorrected] = useState("");
-  const [initialFood] = useState(itemToEdit.food);
-  const workerRef = useRef(null);
-  const timeoutRef = useRef(null);
-
-  useEffect(() => {
-    if (!workerRef.current) {
-      workerRef.current = new Worker(
-        new URL("./workers/spellWorker.js", import.meta.url)
-      );
-
-      workerRef.current.onmessage = (event) => {
-        console.log("Otrzymano wiadomość od workera:", event.data);
-        if (event.data.result) {
-          setFoodEditCorrected(event.data.result);
-        } else if (event.data.error) {
-          console.error(event.data.error);
-        }
-      };
-
-      workerRef.current.onerror = (error) => {
-        console.error("Worker crashed:", error);
-        workerRef.current.terminate();
-        workerRef.current = null;
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    if (itemToEdit.food.length === 0 || itemToEdit.food === initialFood) return;
-
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      if (workerRef.current) {
-        console.log("Wysyłanie wiadomości do workera:", itemToEdit.food);
-        workerRef.current.postMessage({ text: itemToEdit.food });
-      }
-    }, 500);
-  }, [itemToEdit.food, initialFood]);
-
   function handleCancelEdit() {
     setPopupVisible(false);
     setSelectedItemId(null);
@@ -1284,10 +1194,6 @@ function Popup({
     if (!itemToEdit.food || !itemToEdit.quantity)
       return alert("Wypełnij poprawnie wszystkie pola!");
 
-    if (foodEditCorrected === -1) {
-      return alert("Znaleziono błędy w tekście. Proszę poprawić.");
-    }
-
     setPopupVisible(false);
     setSelectedItemId(null);
 
@@ -1295,10 +1201,9 @@ function Popup({
       console.log("Item has not been changed.");
       return;
     }
-
     const updatedItem = {
       ...itemToEdit,
-      food: foodEditCorrected[0].toUpperCase() + foodEditCorrected.slice(1),
+      food: itemToEdit.food[0].toUpperCase() + itemToEdit.food.slice(1),
     };
     onUpdateItem(updatedItem);
     setOriginalItem(null);
@@ -1350,7 +1255,6 @@ function Popup({
               setItemToEdit({ ...itemToEdit, food: e.target.value })
             }
             onKeyDown={onKeyDown}
-            onPaste={onPaste}
             ref={inputRef}
             {...(!isCheck && { onClick: onClick })}
             onFocus={onFocus}
