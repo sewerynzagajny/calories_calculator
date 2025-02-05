@@ -161,7 +161,7 @@ export default function App() {
     if (mediaQuery.matches) {
       if (cursorY < 65) {
         cursorY += 120;
-      } else cursorY += 50;
+      } else cursorY += 40;
     } else if (cursorY < 40) {
       cursorY += 30;
     }
@@ -244,8 +244,10 @@ export default function App() {
     const paste = e.clipboardData?.getData("text");
     if (paste && /\d/.test(paste)) {
       e.preventDefault();
-      alert("Wklej treść bez liczb a ilość wpisz w innym polu.");
-      inputRef.current.blur();
+      alert("Wklej treść bez liczb, a ilość wpisz w innym polu.");
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
     }
   }
 
@@ -577,10 +579,10 @@ function AddItemForm({
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!food || !quantity) return alert("Wypełnij własciwie wszystkie pola.");
+    if (!food || !quantity) return alert("Wypełnij właściwie wszystkie pola.");
     if (foodItems.length === 10)
       return alert(
-        "Możesz za każdym razem dodać tylko 10 pozycji. Usuń niepotrzebne pozycje, albo oszacuj dodane."
+        "Możesz za każdym razem dodać tylko 10 pozycji. Usuń niepotrzebne pozycje albo oszacuj dodane."
       );
     if (foodCorrected === -1) {
       return alert("Znaleziono błędy w tekście. Proszę poprawić.");
@@ -685,7 +687,7 @@ function FoodItemsList({
   function getAIanswer() {
     if (kcalItems.length === 20)
       return alert(
-        "Lista kcal moze skladać sie maskymalnie z 40 pozycji! Skasuj niepotrzebne aby dodać nowe!"
+        "Lista kcal może składać się maksymalnie z 40 pozycji! Skasuj niepotrzebne, aby dodać nowe."
       );
     setLoading(true);
     onEstimate();
@@ -1282,7 +1284,7 @@ function Popup({
   function handleSubmit(e) {
     e.preventDefault();
     if (!itemToEdit.food || !itemToEdit.quantity)
-      return alert("Wypełnij poprawnie wszystkie pola!");
+      return alert("Wypełnij poprawnie wszystkie pola.");
 
     if (foodEditCorrected === -1) {
       return alert("Znaleziono błędy w tekście. Proszę poprawić.");
@@ -1292,7 +1294,6 @@ function Popup({
     setSelectedItemId(null);
 
     if (isItemUnchanged(originalItem, itemToEdit)) {
-      console.log("Item has not been changed.");
       return;
     }
 
