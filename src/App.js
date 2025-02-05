@@ -530,18 +530,60 @@ function AddItemForm({
   kcalItems,
   foodItems,
 }) {
+  const [foodCorrected, setFoodCorrected] = useState("");
+  const workerRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (!workerRef.current) {
+      workerRef.current = new Worker(
+        new URL("./workers/spellWorker.js", import.meta.url)
+      );
+
+      workerRef.current.onmessage = (event) => {
+        console.log("Otrzymano wiadomość od workera:", event.data);
+        if (event.data.result) {
+          setFoodCorrected(event.data.result);
+        } else if (event.data.error) {
+          console.error(event.data.error);
+        }
+      };
+
+      workerRef.current.onerror = (error) => {
+        console.error("Worker crashed:", error);
+        workerRef.current.terminate();
+        workerRef.current = null;
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (food.length === 0) return;
+
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      if (workerRef.current) {
+        console.log("Wysyłanie wiadomości do workera:", food);
+        workerRef.current.postMessage({ text: food });
+      }
+    }, 500);
+  }, [food]);
+
   function handleSubmit(e) {
     e.preventDefault();
-    if (!food || !quantity) return alert("Wypełnij własciwie wszystkie pola!");
+    if (!food || !quantity) return alert("Wypełnij własciwie wszystkie pola.");
     if (foodItems.length === 10)
       return alert(
-        "Możesz za każdym razem dodać tylko 10 pozycji! Usuń niepotrzebne pozycje, albo oszacuj dodane!"
+        "Możesz za każdym razem dodać tylko 10 pozycji. Usuń niepotrzebne pozycje, albo oszacuj dodane."
       );
+    if (foodCorrected === -1) {
+      return alert("Znaleziono błędy w tekście. Proszę poprawić.");
+    }
 
     const id = crypto.randomUUID();
     const newFoodItem = {
       id,
-      food: food[0].toUpperCase() + food.slice(1),
+      food: foodCorrected[0].toUpperCase() + foodCorrected.slice(1),
       quantity,
       unit,
     };
