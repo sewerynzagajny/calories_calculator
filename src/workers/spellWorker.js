@@ -1,5 +1,6 @@
-/* eslint-env worker */
+// /* eslint-env worker */
 /* eslint-disable no-restricted-globals */
+import AJAX from "../utils/AJAX";
 
 self.onmessage = async function (event) {
   const { text } = event.data;
@@ -11,22 +12,18 @@ self.onmessage = async function (event) {
 
   try {
     console.log("Wysyłanie zapytania do LanguageTool API...");
-    const response = await fetch("https://api.languagetool.org/v2/check", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ text, language: "pl" }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
+    const result = await AJAX(
+      "https://api.languagetool.org/v2/check",
+      { text, language: "pl" },
+      undefined,
+      undefined,
+      "application/x-www-form-urlencoded"
+    );
     console.log("Otrzymano odpowiedź z API:", result);
 
     if (result.matches.length > 0) {
       let correctedText = text;
-      let hasCorrections = false;
+      let hasCorrections = [];
 
       // Przechodzimy przez błędy i poprawiamy tekst
       result.matches.forEach((match) => {
@@ -38,11 +35,11 @@ self.onmessage = async function (event) {
             ),
             match.replacements[0].value
           );
-          hasCorrections = true;
-        } else hasCorrections = false;
+          hasCorrections.push(true);
+        } else hasCorrections.push(false);
       });
 
-      if (!hasCorrections) {
+      if (hasCorrections.some((value) => value === false)) {
         self.postMessage({ result: -1 });
         return;
       }
