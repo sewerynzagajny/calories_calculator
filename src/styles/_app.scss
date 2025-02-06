@@ -1,14 +1,8 @@
 .app {
-  // min-height: 100vh;
-  // margin: 0 auto;
-  // display: grid;
-  // grid-template-rows: auto auto auto 1fr auto;
-  // position: relative;
-  min-height: 100dvh; /* Dynamic viewport height */
+  min-height: 100vh;
   margin: 0 auto;
   display: grid;
-  grid-template-rows: min-content min-content min-content 1fr auto;
-  width: 100%;
-  // max-width: 43rem; /* Opcjonalnie dla dopasowania do telefonu */
+  grid-template-rows: auto auto auto 1fr auto;
   position: relative;
+  width: 80%;
 }
