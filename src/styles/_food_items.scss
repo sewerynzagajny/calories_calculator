@@ -1,0 +1,7 @@
+///////////////////////////////////////////////////////////////
+///food-items
+@include items-list("food-items", "food-list", 0, 92rem);
+
+@media only screen and (max-width: $bp-medium) {
+  @include items-list("food-items", "food-list", 0, 48rem);
+}

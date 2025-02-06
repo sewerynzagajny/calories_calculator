@@ -1,0 +1,66 @@
+////////////////////////////////////////////////////////////////////////////////
+///
+// @import "variables";
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+
+  @media only screen and (max-width: $bp-big) {
+    font-size: 56%;
+  }
+
+  @media only screen and (max-width: $bp-small) {
+    font-size: 50%;
+  }
+
+  @media only screen and (max-width: $bp-smaller) {
+    font-size: 45%;
+  }
+
+  @media only screen and (max-width: $bp-smallest) {
+    font-size: 40%;
+  }
+
+  @media only screen and (max-width: $bp-last_smallest) {
+    font-size: 35%;
+  }
+}
+
+body {
+  font-size: $font-size-primary;
+  font-family: $font-primary;
+  color: $font-color-primary;
+  font-weight: $font-weight-primary;
+
+  // position: relative;
+  background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
+    url(../body.webp);
+
+  @media only screen and (max-width: $bp-medium) {
+    background-image: linear-gradient(
+        rgb(34, 34, 34, 0.6),
+        rgb(34, 34, 34, 0.6)
+      ),
+      url(../body-small.webp);
+    background-position: center;
+  }
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  &::after {
+    content: "";
+    display: block;
+    height: 100%;
+    background-image: url(../body.webp);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0;
+  }
+}

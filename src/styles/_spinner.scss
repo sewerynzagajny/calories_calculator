@@ -1,0 +1,12 @@
+.spinner {
+  display: flex;
+  margin: -1.2rem auto;
+  text-align: center;
+
+  svg {
+    height: 2rem;
+    width: 6.037rem;
+    fill: $font-color-secondary;
+    animation: rotate 2s infinite linear;
+  }
+}

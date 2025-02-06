@@ -1,0 +1,105 @@
+//Animations
+@keyframes moveInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+@keyframes moveInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+@keyframes showUp {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes moveOutButton {
+  0% {
+    opacity: 1;
+    transform: translate(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(3rem);
+  }
+}
+
+@keyframes moveInBotton {
+  0% {
+    opacity: 0;
+    transform: translateY(3rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.button--loading {
+  opacity: 0.5 !important;
+  pointer-events: none;
+}
+
+.animated {
+  animation: showUp 0.3s ease-in-out;
+}
+.long-animated {
+  animation: showUp 1s ease-in-out;
+}
+
+.move-out {
+  animation: moveOutButton 0.3s ease-in-out;
+}
+.move-in {
+  animation: moveInBotton 0.5s backwards ease-in-out;
+}
+
+.button-delayed {
+  animation: moveInBotton 0.5s backwards ease-in-out 1s;
+}
+
+.rotate-90 {
+  display: inline-block;
+  transform: rotate(90deg);
+  transition: transform 0.3s ease-in-out;
+}
+
+.rotate-270 {
+  display: inline-block;
+  transform: rotate(270deg);
+  transition: transform 0.3s ease-in-out;
+}

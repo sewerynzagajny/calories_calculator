@@ -1,0 +1,10 @@
+///kcal__items
+@include items-list("kcal__items", "kcal-list", 1.6rem, 98.2rem);
+
+@media only screen and (max-width: $bp-medium) {
+  @include items-list("kcal__items", "kcal-list", 1.6, 53.8rem);
+}
+
+.kcal__items__kcal-list--list:last-child {
+  margin-bottom: -3rem;
+}

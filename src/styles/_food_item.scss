@@ -1,0 +1,47 @@
+.food-item {
+  color: $font-color-primary;
+  transition: all 0.3s;
+  &.selected {
+    color: $font-color-primary;
+  }
+  .has-selected-item & {
+    &:not(.selected) {
+      color: $font-color-primary-dark;
+    }
+  }
+
+  &__number {
+    margin-right: 0.3rem;
+  }
+
+  &__quantity,
+  &__unit {
+    @extend %strong-style;
+  }
+  &__btn {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    display: flex;
+    gap: 1.8rem;
+
+    &--action {
+      color: $font-color-secondary;
+      background-color: $color-blue;
+      border: none;
+      border-radius: 10rem;
+      font-family: inherit;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 0.4rem 1.4rem;
+      font-size: 1.6rem;
+      box-shadow: 0 1rem 2rem rgba($color-black, 0.2);
+      animation: showUp 0.16s backwards ease-in-out;
+      transition: all 0.3s;
+      &:active {
+        transform: translateY(0.1rem);
+        box-shadow: 0 0.5rem 1rem rgba($color-black, 0.2);
+      }
+    }
+  }
+}

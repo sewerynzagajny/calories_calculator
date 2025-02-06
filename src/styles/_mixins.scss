@@ -1,0 +1,131 @@
+///////////////////////////////////////////////////////////////////////
+%common-input-styles {
+  color: $font-color-secondary;
+  border: none;
+  border-radius: 10rem;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 1.2rem 2.4rem;
+  font-size: 1.8rem;
+}
+
+%strong-style {
+  font-weight: $font-strong;
+  font-style: italic;
+}
+
+%popup-backgruond {
+  position: fixed;
+  background-color: rgb(0, 0, 0, 0.3);
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+  z-index: 99999;
+  height: 100vh;
+  width: 100vw;
+  animation: showUp 0.3s ease-in-out;
+}
+
+////////////////////////////////////////////////////////////////////////
+
+@mixin input_item($time-animation, $button-gap, $padding-bottom, $margin) {
+  padding-bottom: $padding-bottom;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.8rem;
+
+  @media only screen and (max-width: $bp-medium) {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  & input,
+  & select {
+    @extend %common-input-styles;
+    opacity: 1;
+    animation: showUp $time-animation backwards;
+  }
+
+  &__food {
+    width: 46rem;
+    height: 4.8rem;
+  }
+
+  &__container {
+    margin: $margin;
+    display: flex;
+    gap: 1.8rem;
+
+    &--quantity {
+      width: 12rem;
+      height: 4.8rem;
+    }
+
+    &--unit {
+      width: 10rem;
+      height: 4.8rem;
+    }
+
+    & > :nth-last-child(#{$button-gap}) {
+      margin-right: 5.8rem;
+      @media only screen and (max-width: $bp-medium) {
+        margin-right: 8.4rem;
+      }
+    }
+
+    &--label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  }
+}
+
+@mixin items-list($name-items, $name-list, $ul_margin-button, $width) {
+  .#{$name-items} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+
+    &__#{$name-list} {
+      width: $width;
+      margin-bottom: 0.8rem;
+    }
+
+    & ul {
+      list-style: none;
+      display: grid;
+
+      grid-template-columns: repeat(auto-fit, minmax(62rem, 1fr));
+      @media only screen and (max-width: $bp-medium) {
+        grid-template-columns: repeat(auto-fit, minmax(42rem, 1fr));
+      }
+      gap: 1.8rem;
+      justify-content: center;
+
+      align-items: center;
+      margin-left: 1rem;
+      margin-bottom: $ul_margin-button;
+
+      & li {
+        & span {
+          cursor: pointer;
+        }
+      }
+    }
+
+    &__action {
+      display: flex;
+      justify-content: center;
+      gap: 1.8rem;
+      margin-bottom: 4.2rem;
+    }
+  }
+}

@@ -232,19 +232,32 @@ export default function App() {
       temperature: 0.7,
     };
 
+    function wrongInput() {
+      setLoading(false);
+      setTimeout(() => {
+        alert(
+          "Nie rozpoznano składnika lub dania. Popraw lub sprecyzuj nazwę i spróbuj ponownie."
+        );
+      }, 270);
+    }
+
     try {
       const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
       const output = response.choices[0].message.content;
       if (output === "-1") {
-        setLoading(false);
-        setTimeout(() => {
-          alert(
-            "Nie rozpoznano składnika lub dania. Popraw i spróbuj ponownie."
-          );
-        }, 270);
+        wrongInput();
         return;
       }
       const dataOutput = JSON.parse(output);
+      if (
+        dataOutput.calories === -1 ||
+        dataOutput.protein === -1 ||
+        dataOutput.carbohydrates === -1 ||
+        dataOutput.fat === -1
+      ) {
+        wrongInput();
+        return;
+      }
 
       const id = crypto.randomUUID();
       const newKcalItem = {
