@@ -155,12 +155,12 @@ export default function Popup({
                 setItemToEdit({ ...itemToEdit, quantity: e.target.value })
               }
             />
-            {/* <label
+            <label
               className="popup__content--edit_item__container--label"
               htmlFor="item-select-unit"
             >
               Wybierz jednostkę:
-            </label> */}
+            </label>
             <select
               id="item-select-unit"
               className="popup__content--edit_item__container--unit"
