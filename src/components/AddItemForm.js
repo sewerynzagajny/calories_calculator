@@ -26,6 +26,13 @@ export default function AddItemForm({
   const [foodCorrected, setFoodCorrected] = useState("");
   const workerRef = useRef(null);
   const timeoutRef = useRef(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (!workerRef.current) {
@@ -136,7 +143,10 @@ export default function AddItemForm({
           ))}
         </select>
 
-        <Button loading={loading} style={{ width: "12rem" }}>
+        <Button
+          loading={loading}
+          style={{ width: windowWidth < 496 ? "10rem" : "12rem" }}
+        >
           Dodaj
         </Button>
       </div>

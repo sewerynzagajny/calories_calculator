@@ -7,4 +7,8 @@
   gap: 2.4rem;
   padding: 2rem 1.2rem;
   animation: moveInDown 1s ease-in-out;
+
+  @media only screen and (max-width: $bp-smaller) {
+    font-size: 3.6rem;
+  }
 }
