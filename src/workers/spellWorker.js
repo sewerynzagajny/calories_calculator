@@ -36,6 +36,11 @@ self.onmessage = async function (event) {
             match.replacements[0].value
           );
           hasCorrections.push(true);
+        } else if (
+          match.shortMessage ===
+          "Przyimek wymaga biernika, dopełniacza lub narzędnika"
+        ) {
+          hasCorrections.push(true);
         } else hasCorrections.push(false);
       });
 

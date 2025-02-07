@@ -220,7 +220,8 @@ export default function App() {
       .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
       .join("; ")
       .trim();
-    const estimateText = `Oszacuj razem kaloryczność i makroskładniki dla: ${foodItemString}. Odpowiedz tylko w JSON {calories, protein, fat, carbohydrates}, bez komentarzy, sugestii. Jeśli co najmniej jeden składnik jest niejasny, nie nadaje się do spożycia, odpowiedz -1.`;
+    // const estimateText = `Oszacuj razem kaloryczność i makroskładniki dla: ${foodItemString}. Odpowiedz tylko w JSON {calories, protein, fat, carbohydrates}, bez komentarzy, sugestii. Jeśli co najmniej jeden składnik jest niejasny, nie nadaje się do spożycia, odpowiedz -1.`;
+    const estimateText = `Oszacuj razem kaloryczność i makroskładniki dla: ${foodItemString}. Odpowiedz tylko w JSON {calories, protein, fat, carbohydrates}, bez komentarzy, sugestii. Jeśli co najmniej jeden składnik nie nadaje się do spożycia, odpowiedz -1.`;
 
     const dataInput = {
       model,
@@ -244,11 +245,14 @@ export default function App() {
     try {
       const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
       const output = response.choices[0].message.content;
+      console.log("Output:", output);
       if (output === "-1") {
         wrongInput();
         return;
       }
+
       const dataOutput = JSON.parse(output);
+      console.log("Data output:", dataOutput);
       if (
         dataOutput.calories === -1 ||
         dataOutput.protein === -1 ||
@@ -258,7 +262,6 @@ export default function App() {
         wrongInput();
         return;
       }
-
       const id = crypto.randomUUID();
       const newKcalItem = {
         id,
