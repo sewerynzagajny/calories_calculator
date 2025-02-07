@@ -2,6 +2,10 @@
   display: flex;
   gap: 1.2rem;
 
+  @media only screen and (max-width: $bp-last_smallest) {
+    gap: 0.1rem;
+  }
+
   // @media only screen and (max-width: 62rem) {
   //   padding-left: 3rem;
   // }

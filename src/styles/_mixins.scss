@@ -53,12 +53,20 @@
     @media only screen and (max-width: $bp-smaller) {
       width: 34.5rem;
     }
+
+    @media only screen and (max-width: $bp-last_smallest) {
+      width: 31.5rem;
+    }
   }
 
   &__container {
     margin: $margin;
     display: flex;
     gap: 1.8rem;
+
+    @media only screen and (max-width: $bp-last_smallest) {
+      gap: 0.5rem;
+    }
 
     &--quantity {
       width: 12rem;

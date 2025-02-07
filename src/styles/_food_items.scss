@@ -1,10 +1,16 @@
 ///////////////////////////////////////////////////////////////
 ///food-items
-@include items-list("food-items", "food-list", 0, 92rem);
+@include items-list("food-items", "food-list", 1.4rem, 92rem);
 
 @media only screen and (max-width: $bp-medium) {
-  @include items-list("food-items", "food-list", 0, 48rem);
+  @include items-list("food-items", "food-list", 1.4rem, 48rem);
 }
 @media only screen and (max-width: $bp-smaller) {
-  @include items-list("food-items", "food-list", 0, 36rem);
+  @include items-list("food-items", "food-list", 1.4rem, 36rem);
 }
+@media only screen and (max-width: $bp-last_smallest) {
+  @include items-list("food-items", "food-list", 1.4rem, 32rem);
+}
+// @media only screen and (max-width: $bp-last_smallest) {
+//   @include items-list("food-items", "food-list", 0, 32rem);
+// }

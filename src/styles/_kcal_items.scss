@@ -1,12 +1,18 @@
 ///kcal__items
-@include items-list("kcal__items", "kcal-list", 1.6rem, 98.2rem);
+@include items-list("kcal__items", "kcal-list", 2.2rem, 98.2rem);
 
 @media only screen and (max-width: $bp-medium) {
-  @include items-list("kcal__items", "kcal-list", 1.6rem, 53.8rem);
+  @include items-list("kcal__items", "kcal-list", 2.2rem, 53.8rem);
 }
 @media only screen and (max-width: $bp-smaller) {
-  @include items-list("kcal__items", "kcal-list", 1.6rem, 41rem);
+  @include items-list("kcal__items", "kcal-list", 2.2rem, 41rem);
 }
+@media only screen and (max-width: $bp-last_smallest) {
+  @include items-list("kcal__items", "kcal-list", 2.2rem, 36rem);
+}
+// @media only screen and (max-width: $bp-last_smallest) {
+//   @include items-list("kcal__items", "kcal-list", 1.6rem, 36rem);
+// }
 
 .kcal__items__kcal-list--list:last-child {
   margin-bottom: -3rem;

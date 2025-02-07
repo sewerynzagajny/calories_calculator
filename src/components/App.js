@@ -237,7 +237,7 @@ export default function App() {
       setLoading(false);
       setTimeout(() => {
         alert(
-          "Nie rozpoznano składnika lub dania. Popraw lub sprecyzuj nazwę i spróbuj ponownie."
+          "Błąd. Możliwe, że nie rozpoznano składnika lub dania. Sprawdź poprawność nazwy i spróbuj ponownie."
         );
       }, 270);
     }
@@ -286,6 +286,7 @@ export default function App() {
       }, 1);
     } catch (error) {
       console.error("Error fetching estimate:", error);
+      wrongInput();
     }
   }
 
