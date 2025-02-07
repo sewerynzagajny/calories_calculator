@@ -136,7 +136,7 @@ export default function AddItemForm({
           ))}
         </select>
 
-        <Button loading={loading} style={{ width: "20%" }}>
+        <Button loading={loading} style={{ width: "12rem" }}>
           Dodaj
         </Button>
       </div>
