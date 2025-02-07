@@ -24,8 +24,10 @@
   }
 
   &__icon {
-    margin-top: 0.3rem;
-    font-size: 2rem;
+    // margin-top: 0.3rem;
+    // font-size: 2rem;
+    margin-top: -0.2rem;
+    font-size: 3rem;
     cursor: pointer;
     color: $font-color-primary;
     transition: all 0.3s;

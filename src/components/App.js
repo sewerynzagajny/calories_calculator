@@ -151,7 +151,8 @@ export default function App() {
   }
 
   function sumValues(items, key) {
-    return items.reduce((acc, item) => acc + +item[key], 0);
+    const sum = items.reduce((acc, item) => acc + +item[key], 0);
+    return Math.ceil(sum * 100) / 100;
   }
 
   function handleShowTotal() {

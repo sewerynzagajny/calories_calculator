@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import KcalOutputLItem from "./KcalOutputLIte";
+import KcalOutputLItem from "./KcalOutputLItem";
 import Button from "./Btn";
 
 export default function KcalOutputList({

@@ -40,6 +40,9 @@ body {
   // position: relative;
   background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
     url(../body.webp);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 
   @media only screen and (max-width: $bp-medium) {
     background-image: linear-gradient(
@@ -48,10 +51,10 @@ body {
       ),
       url(../body-small.webp);
     background-position: center;
+    &::after {
+      background-image: url(../body-small.webp);
+    }
   }
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 
   &::after {
     content: "";

@@ -102,12 +102,12 @@ export default function KcalOutputLItem({
 
   return (
     <div className="kcal">
-      <div
-        className={`kcal__icon ${isKcalSelected ? "selected" : ""}`}
-        onClick={handleToggleKcalDetails}
-      >
+      <div className={`kcal__icon ${isKcalSelected ? "selected" : ""}`}>
         {/* {isKcalDetailsSelected ? "▼" : "▲"} */}
-        <span className={isKcalDetailsSelected ? "rotate-270" : "rotate-90"}>
+        <span
+          className={isKcalDetailsSelected ? "rotate-270" : "rotate-90"}
+          onClick={handleToggleKcalDetails}
+        >
           {">"}
         </span>
       </div>
