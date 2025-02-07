@@ -117,12 +117,12 @@ export default function AddItemForm({
           value={quantity}
           onChange={onQuantity}
         />
-        <label
+        {/* <label
           className="add_item__container--label"
           htmlFor="item-select-unit"
         >
           Wybierz jednostkę:
-        </label>
+        </label> */}
         <select
           id="item-select-unit"
           className="add_item__container--unit"
