@@ -9,7 +9,6 @@
 
 html {
   font-size: 62.5%;
-  height: -webkit-fill-available;
 
   @media only screen and (max-width: $bp-big) {
     font-size: 56%;
@@ -37,7 +36,6 @@ body {
   font-family: $font-primary;
   color: $font-color-primary;
   font-weight: $font-weight-primary;
-  height: -webkit-fill-available;
 
   // position: relative;
   background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
