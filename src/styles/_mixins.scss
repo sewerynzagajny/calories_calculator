@@ -77,12 +77,11 @@
     }
 
     &--unit {
-      padding-left: 3.6rem !important;
+      text-align: center;
       width: 10rem;
       height: 4.8rem;
       @media only screen and (max-width: $bp-smaller) {
         width: 9.5rem;
-        padding-left: 3.6rem !important;
       }
     }
 
