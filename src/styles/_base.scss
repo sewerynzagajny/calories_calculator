@@ -55,19 +55,19 @@ body {
   //   opacity: 0;
   // }
 
-  @media only screen and (max-width: $bp-medium) {
-    background-image: linear-gradient(
-        rgb(34, 34, 34, 0.6),
-        rgb(34, 34, 34, 0.6)
-      ),
-      url(../body-small.webp);
-    background-repeat: no-repeat;
-    background-size: cover; // Upewnij się, że jest ustawione na cover
-    background-attachment: fixed; // Dodane
-    background-position: center;
+  // @media only screen and (max-width: $bp-medium) {
+  //   background-image: linear-gradient(
+  //       rgb(34, 34, 34, 0.6),
+  //       rgb(34, 34, 34, 0.6)
+  //     ),
+  //     url(../body-small.webp);
+  //   background-repeat: no-repeat;
+  //   background-size: cover; // Upewnij się, że jest ustawione na cover
+  //   background-attachment: fixed; // Dodane
+  //   background-position: center;
 
-    // &::after {
-    //   background-image: url(../body-small.webp);
-    // }
-  }
+  //   // &::after {
+  //   //   background-image: url(../body-small.webp);
+  //   // }
+  // }
 }
