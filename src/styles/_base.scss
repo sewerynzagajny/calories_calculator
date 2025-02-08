@@ -61,9 +61,16 @@ body {
         rgb(34, 34, 34, 0.6)
       ),
       url(../body-small.webp);
-    // background-position: center;
+    background-position: center;
     &::after {
+      content: "";
+      display: block;
+      height: 100%;
       background-image: url(../body-small.webp);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0;
     }
   }
 }
