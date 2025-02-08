@@ -44,16 +44,16 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 
-  &::after {
-    content: "";
-    display: block;
-    height: 100%;
-    background-image: url(../body.webp);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0;
-  }
+  // &::after {
+  //   content: "";
+  //   display: block;
+  //   height: 100%;
+  //   background-image: url(../body.webp);
+  //   background-size: contain;
+  //   background-repeat: no-repeat;
+  //   background-position: center;
+  //   opacity: 0;
+  // }
 
   @media only screen and (max-width: $bp-medium) {
     background-image: linear-gradient(
@@ -61,17 +61,13 @@ body {
         rgb(34, 34, 34, 0.6)
       ),
       url(../body-small.webp);
+    background-repeat: no-repeat;
+    background-size: cover; // Upewnij się, że jest ustawione na cover
+    background-attachment: fixed; // Dodane
     background-position: center;
-    background-size: contain;
-    &::after {
-      content: "";
-      display: block;
-      height: 100%;
-      background-image: url(../body-small.webp);
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      opacity: 0;
-    }
+
+    // &::after {
+    //   background-image: url(../body-small.webp);
+    // }
   }
 }
