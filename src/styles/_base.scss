@@ -31,47 +31,77 @@ html {
   // }
 }
 
+// body {
+//   font-size: $font-size-primary;
+//   font-family: $font-primary;
+//   color: $font-color-primary;
+//   font-weight: $font-weight-primary;
+
+//   // position: relative;
+//   background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
+//     url(../body.webp);
+//   background-size: cover;
+//   background-repeat: no-repeat;
+//   background-attachment: fixed;
+
+//   &::after {
+//     content: "";
+//     display: block;
+//     height: 100%;
+//     background-image: url(../body.webp);
+//     background-size: contain;
+//     background-repeat: no-repeat;
+//     background-position: center;
+//     opacity: 0;
+//   }
+
+//   @media only screen and (max-width: $bp-medium) {
+//     background-image: linear-gradient(
+//         rgb(34, 34, 34, 0.6),
+//         rgb(34, 34, 34, 0.6)
+//       ),
+//       url(../body-small.webp);
+//     background-position: center;
+//     &::after {
+//       background-image: url(../body-small.webp);
+//     }
+//   }
+// }
+
 body {
   font-size: $font-size-primary;
   font-family: $font-primary;
   color: $font-color-primary;
   font-weight: $font-weight-primary;
 
-  // position: relative;
-  background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
-    url(../body.webp);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  position: relative;
 
-  // &::after {
-  //   content: "";
-  //   display: block;
-  //   height: 100%;
-  //   background-image: url(../body.webp);
-  //   background-size: contain;
-  //   background-repeat: no-repeat;
-  //   background-position: center;
-  //   opacity: 0;
-  // }
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: linear-gradient(
+        rgba(34, 34, 34, 0.6),
+        rgba(34, 34, 34, 0.6)
+      ),
+      url(../body.webp);
+    background-size: cover;
+    background-repeat: no-repeat;
+    // background-position: center;
+    z-index: -1; // Wysyła tło za całą zawartość strony
+  }
 
   @media only screen and (max-width: $bp-medium) {
-    background-image: linear-gradient(
-        rgb(34, 34, 34, 0.6),
-        rgb(34, 34, 34, 0.6)
-      ),
-      url(../body-small.webp);
-    background-repeat: no-repeat;
-    background-size: cover; // Upewnij się, że jest ustawione na cover
-    background-attachment: fixed; // Ustawione na fixed
-    background-position: center;
-    -webkit-background-attachment: fixed;
-    -moz-background-attachment: fixed;
-    -o-background-attachment: fixed;
-    -ms-background-attachment: fixed;
-
-    // &::after {
-    //   background-image: url(../body-small.webp);
-    // }
+    &::before {
+      background-image: linear-gradient(
+          rgba(34, 34, 34, 0.6),
+          rgba(34, 34, 34, 0.6)
+        ),
+        url(../body-small.webp);
+      background-position: center;
+    }
   }
 }
