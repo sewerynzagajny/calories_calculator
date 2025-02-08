@@ -17,56 +17,7 @@ html {
   @media only screen and (max-width: $bp-small) {
     font-size: 50%;
   }
-
-  // @media only screen and (max-width: $bp-smaller) {
-  //   font-size: 45%;
-  // }
-
-  // @media only screen and (max-width: $bp-smallest) {
-  //   font-size: 40%;
-  // }
-
-  // @media only screen and (max-width: $bp-last_smallest) {
-  //   font-size: 35%;
-  // }
 }
-
-// body {
-//   font-size: $font-size-primary;
-//   font-family: $font-primary;
-//   color: $font-color-primary;
-//   font-weight: $font-weight-primary;
-
-//   // position: relative;
-//   background-image: linear-gradient(rgb(34, 34, 34, 0.6), rgb(34, 34, 34, 0.6)),
-//     url(../body.webp);
-//   background-size: cover;
-//   background-repeat: no-repeat;
-//   background-attachment: fixed;
-
-//   &::after {
-//     content: "";
-//     display: block;
-//     height: 100%;
-//     background-image: url(../body.webp);
-//     background-size: contain;
-//     background-repeat: no-repeat;
-//     background-position: center;
-//     opacity: 0;
-//   }
-
-//   @media only screen and (max-width: $bp-medium) {
-//     background-image: linear-gradient(
-//         rgb(34, 34, 34, 0.6),
-//         rgb(34, 34, 34, 0.6)
-//       ),
-//       url(../body-small.webp);
-//     background-position: center;
-//     &::after {
-//       background-image: url(../body-small.webp);
-//     }
-//   }
-// }
 
 body {
   font-size: $font-size-primary;
@@ -90,8 +41,7 @@ body {
       url(../body.webp);
     background-size: cover;
     background-repeat: no-repeat;
-    // background-position: center;
-    z-index: -1; // Wysyła tło za całą zawartość strony
+    z-index: -1;
   }
 
   @media only screen and (max-width: $bp-medium) {
