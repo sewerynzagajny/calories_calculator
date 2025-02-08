@@ -61,12 +61,14 @@ body {
         rgb(34, 34, 34, 0.6)
       ),
       url(../body-small.webp);
-    // background-repeat: no-repeat;
+    background-repeat: no-repeat;
     background-size: cover; // Upewnij się, że jest ustawione na cover
     background-attachment: fixed; // Ustawione na fixed
     background-position: center;
-    height: 100vh; // Dodane
-    overflow: hidden; // Dodane
+    -webkit-background-attachment: fixed;
+    -moz-background-attachment: fixed;
+    -o-background-attachment: fixed;
+    -ms-background-attachment: fixed;
 
     // &::after {
     //   background-image: url(../body-small.webp);
