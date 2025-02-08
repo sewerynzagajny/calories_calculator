@@ -63,8 +63,10 @@ body {
       url(../body-small.webp);
     // background-repeat: no-repeat;
     background-size: cover; // Upewnij się, że jest ustawione na cover
-    background-attachment: local; // Dodane
+    background-attachment: fixed; // Ustawione na fixed
     background-position: center;
+    height: 100vh; // Dodane
+    overflow: hidden; // Dodane
 
     // &::after {
     //   background-image: url(../body-small.webp);
