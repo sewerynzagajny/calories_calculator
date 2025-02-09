@@ -5,11 +5,45 @@ import AJAX from "../utils/AJAX";
 self.onmessage = async function (event) {
   const { text } = event.data;
 
-  if (!text || text.trim().length === 0) {
-    self.postMessage({ result: text }); // Jeśli pusty, zwróć to samo
+  // Funkcja sprawdzająca, czy wyraz jest w cudzysłowie
+  // function isInQuotes(word) {
+  //   const quotePattern = /^["„”''].+["„”'']$/;
+  //   return quotePattern.test(word);
+  // }
+
+  // if (!text || text.trim().length === 0 || isInQuotes(text)) {
+  //   self.postMessage({ result: text });
+  //   return;
+  // }
+
+  // Funkcja sprawdzająca, czy wyraz jest w cudzysłowie i zwracająca tekst bez cudzysłowów
+  function isInQuotes(word) {
+    const quotePattern = /^["„”''](.+?)["„”'']$/;
+    const match = word.match(quotePattern);
+    return match ? match[1] : null;
+  }
+
+  // Funkcja sprawdzająca, czy tekst zawiera tylko cudzysłowy, znaki interpunkcyjne, wykrzykniki, znaki zapytania, <, > i symbole działania
+  function containsOnlySpecialChars(text) {
+    const specialCharsPattern = /^[„”"'.,!?<>\-+*/^%&|=\s]*$/;
+    const quotesAndSpacesPattern = /^["„”'']\s*["„”'']$/;
+    return (
+      specialCharsPattern.test(text.trim()) ||
+      quotesAndSpacesPattern.test(text.trim())
+    );
+  }
+
+  const strippedText = isInQuotes(text);
+
+  if (!text || text.trim().length === 0 || strippedText !== null) {
+    self.postMessage({ result: strippedText !== null ? strippedText : text });
     return;
   }
 
+  if (containsOnlySpecialChars(text)) {
+    self.postMessage({ result: -1 });
+    return;
+  }
   try {
     console.log("Wysyłanie zapytania do LanguageTool API...");
     const result = await AJAX(
