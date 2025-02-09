@@ -170,8 +170,12 @@ export default function App() {
   function handleKeyDown(e) {
     const charCode = e.keyCode || e.which;
     if (
-      (charCode >= 48 && charCode <= 57) ||
-      (charCode >= 96 && charCode <= 105)
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      !e.metaKey &&
+      ((charCode >= 48 && charCode <= 57) ||
+        (charCode >= 96 && charCode <= 105))
     ) {
       e.preventDefault();
       alert("Wpisz ilość w innym polu.");
