@@ -289,6 +289,21 @@ export default function App() {
       setTimeout(() => {
         setShowKcalButtons(true);
       }, 1);
+
+      // setFoodItems([]);
+      // setLoading(false);
+      // setTimeout(() => {
+      //   handleAddKcalItems(newKcalItem);
+      //   setContainerHeight(container.offsetHeight + "px");
+      // }, 170);
+      // setTimeout(() => {
+      //   setContainerHeight("auto")
+      // }, 270);
+      // setShowKcalButtons(true);
+      // if (kcalItems.length) setShowKcalButtons(false);
+      // setTimeout(() => {
+      //   setShowKcalButtons(true);
+      // }, 1);
     } catch (error) {
       console.error("Error fetching estimate:", error);
       wrongInput();
