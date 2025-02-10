@@ -8,7 +8,6 @@
     background-color: $font-color-secondary;
     position: absolute;
     transform: translateY(-50%);
-    // left: 15rem;
 
     border-radius: 10rem;
     border: #f3f3f3 solid 0.2rem;
@@ -21,11 +20,9 @@
       border-radius: 2rem;
       border: #f3f3f3 solid 0.2rem;
       &--edit_item {
-        // @include input_item(none, 3, 0, 0);
         gap: 1.6rem;
         padding: 3.4rem;
-        // justify-content: flex-end; //big-scr
-        // align-items: flex-end; //big-scr
+
         justify-content: unset;
         align-items: unset;
 
@@ -37,9 +34,6 @@
           row-gap: 3rem;
           width: max-content;
           margin: 0 auto;
-          // justify-content: center;
-          // align-items: center;
-          // margin-left: 1.8rem;
 
           & > :nth-last-child(3) {
             margin-right: 0;

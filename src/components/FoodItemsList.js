@@ -54,7 +54,6 @@ export default function FoodItemsList({
       <div
         className="food-items__food-list"
         style={{ height: containerHeight }}
-        // style={foodItems.length === 0 ? { maxHeight: "4vh", flex: 1 } : {}}
       >
         <ul
           ref={elementRef}

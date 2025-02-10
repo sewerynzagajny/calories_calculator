@@ -249,14 +249,12 @@ export default function App() {
     try {
       const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
       const output = response.choices[0].message.content;
-      console.log("Output:", output);
       if (output === "-1") {
         wrongInput();
         return;
       }
 
       const dataOutput = JSON.parse(output);
-      console.log("Data output:", dataOutput);
       if (
         dataOutput.calories === -1 ||
         dataOutput.protein === -1 ||

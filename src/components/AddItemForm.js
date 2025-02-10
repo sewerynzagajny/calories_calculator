@@ -41,7 +41,6 @@ export default function AddItemForm({
       );
 
       workerRef.current.onmessage = (event) => {
-        console.log("Otrzymano wiadomość od workera:", event.data);
         if (event.data.result) {
           setFoodCorrected(event.data.result);
         } else if (event.data.error) {
@@ -63,7 +62,6 @@ export default function AddItemForm({
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       if (workerRef.current) {
-        console.log("Wysyłanie wiadomości do workera:", food);
         workerRef.current.postMessage({ text: food });
       }
     }, 500);

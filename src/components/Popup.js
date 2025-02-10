@@ -32,7 +32,6 @@ export default function Popup({
       );
 
       workerRef.current.onmessage = (event) => {
-        console.log("Otrzymano wiadomość od workera:", event.data);
         if (event.data.result) {
           setFoodEditCorrected(event.data.result);
         } else if (event.data.error) {
@@ -54,7 +53,6 @@ export default function Popup({
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       if (workerRef.current) {
-        console.log("Wysyłanie wiadomości do workera:", itemToEdit.food);
         workerRef.current.postMessage({ text: itemToEdit.food });
       }
     }, 500);
@@ -91,7 +89,6 @@ export default function Popup({
     };
     onUpdateItem(updatedItem);
     setOriginalItem(null);
-    console.log(updatedItem);
   }
   useEffect(() => {
     function handleClickOutside(e) {

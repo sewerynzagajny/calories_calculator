@@ -2,6 +2,12 @@
 /* eslint-disable no-restricted-globals */
 import AJAX from "../utils/AJAX";
 
+// Funkcja usuwająca znaki interpunkcyjne na końcu wyrażenia
+function removeTrailingPunctuation(text) {
+  if (typeof text !== "string") return text;
+  return text.replace(/[.,!?<>\-+*/^%&|=\s:;]+$/, "");
+}
+
 self.onmessage = async function (event) {
   const { text } = event.data;
 
@@ -27,7 +33,8 @@ self.onmessage = async function (event) {
   const strippedText = isInQuotes(text);
 
   if (!text || text.trim().length === 0 || strippedText !== null) {
-    self.postMessage({ result: strippedText !== null ? strippedText : text });
+    const resultText = strippedText !== null ? strippedText : text;
+    self.postMessage({ result: removeTrailingPunctuation(resultText) });
     return;
   }
 
@@ -37,7 +44,6 @@ self.onmessage = async function (event) {
   }
 
   try {
-    console.log("Wysyłanie zapytania do LanguageTool API...");
     const result = await AJAX(
       "https://api.languagetool.org/v2/check",
       { text, language: "pl" },
@@ -45,7 +51,6 @@ self.onmessage = async function (event) {
       undefined,
       "application/x-www-form-urlencoded"
     );
-    console.log("Otrzymano odpowiedź z API:", result);
 
     if (result.matches.length > 0) {
       let correctedText = text;
@@ -75,9 +80,9 @@ self.onmessage = async function (event) {
         return;
       }
 
-      self.postMessage({ result: correctedText });
+      self.postMessage({ result: removeTrailingPunctuation(correctedText) });
     } else {
-      self.postMessage({ result: text });
+      self.postMessage({ result: removeTrailingPunctuation(text) });
     }
   } catch (error) {
     console.error("Błąd podczas sprawdzania tekstu:", error);
