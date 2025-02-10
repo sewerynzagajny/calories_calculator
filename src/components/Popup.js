@@ -85,7 +85,9 @@ export default function Popup({
 
     const updatedItem = {
       ...itemToEdit,
-      food: foodEditCorrected[0].toUpperCase() + foodEditCorrected.slice(1),
+      food: foodEditCorrected
+        ? foodEditCorrected[0].toUpperCase() + foodEditCorrected.slice(1)
+        : itemToEdit.food,
     };
     onUpdateItem(updatedItem);
     setOriginalItem(null);
