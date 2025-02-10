@@ -53,14 +53,26 @@ export default function App() {
 
   function handleAddKcalItems(kcalItem) {
     setKcalItems((kcalItems) => [...kcalItems, kcalItem]);
-    setTimeout(() => {
-      const container = document.querySelector(".kcal__items__kcal-list");
-      setContainerKcalHeight(container.offsetHeight + "px");
-      setTimeout(() => {
-        setContainerKcalHeight("auto");
-      }, 270);
-    }, 100); // Dodaj opóźnienie 100ms przed ustawieniem wysokości
+    //   setTimeout(() => {
+    //     const container = document.querySelector(".kcal__items__kcal-list");
+    //     setContainerKcalHeight(container.offsetHeight + "px");
+    //     setTimeout(() => {
+    //       setContainerKcalHeight("auto");
+    //     }, 270);
+    //   }, 100); // Dodaj opóźnienie 100ms przed ustawieniem wysokości
   }
+
+  useEffect(() => {
+    if (dataKcalLoaded && kcalItems.length > 0) {
+      setTimeout(() => {
+        const container = document.querySelector(".kcal__items__kcal-list");
+        setContainerKcalHeight(container.offsetHeight + "px");
+        setTimeout(() => {
+          setContainerKcalHeight("auto");
+        }, 270);
+      }, 100); // Dodaj opóźnienie 100ms przed ustawieniem wysokości
+    }
+  }, [kcalItems, dataKcalLoaded]);
 
   function handleUpdateItem(updatedItem) {
     setFoodItems((foodItems) =>
