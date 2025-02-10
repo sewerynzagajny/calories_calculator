@@ -271,10 +271,10 @@ export default function App() {
       const newKcalItem = {
         id,
         food: foodItemString,
-        calories: dataOutput.calories,
-        fat: dataOutput.fat,
-        carbohydrates: dataOutput.carbohydrates,
-        protein: dataOutput.protein,
+        calories: Math.ceil(dataOutput.calories * 100) / 100,
+        fat: Math.ceil(dataOutput.fat * 100) / 100,
+        carbohydrates: Math.ceil(dataOutput.carbohydrates * 100) / 100,
+        protein: Math.ceil(dataOutput.protein * 100) / 100,
       };
 
       // handleAddKcalItems(newKcalItem);
@@ -291,9 +291,11 @@ export default function App() {
       // }, 1);
 
       setFoodItems([]);
-      handleAddKcalItems(newKcalItem);
-      setContainerHeight(container.offsetHeight + "px");
       setLoading(false);
+      setTimeout(() => {
+        handleAddKcalItems(newKcalItem);
+        setContainerHeight(container.offsetHeight + "px");
+      }, 170);
       setTimeout(() => {
         setContainerHeight("auto");
       }, 270);
