@@ -5,34 +5,8 @@ import AJAX from "../utils/AJAX";
 self.onmessage = async function (event) {
   const { text } = event.data;
 
-  // Funkcja sprawdzająca, czy wyraz jest w cudzysłowie i zwracająca tekst bez cudzysłowów
-  function isInQuotes(word) {
-    const quotePattern = /^["„”''](.+?)["„”'']$/;
-    const quotesAndSpacesPattern = /^["„”'']\s*["„”'']$/;
-    const match = word.match(quotePattern);
-
-    if (quotesAndSpacesPattern.test(word.trim())) {
-      return -1; // Jeśli tekst to tylko dwa cudzysłowy i spacje, zwróć -1
-    }
-    return match ? match[1].trim() : null;
-  }
-
-  // Funkcja sprawdzająca, czy tekst zawiera tylko cudzysłowy, znaki interpunkcyjne, wykrzykniki, znaki zapytania, <, > i symbole działania
-  function containsOnlySpecialChars(text) {
-    const specialCharsPattern = /^[„”"'.,!?<>\-+*/^%&|=\s]*$/;
-
-    return specialCharsPattern.test(text.trim());
-  }
-
-  const strippedText = isInQuotes(text);
-
-  if (!text || text.trim().length === 0 || strippedText !== null) {
-    self.postMessage({ result: strippedText !== null ? strippedText : text });
-    return;
-  }
-
-  if (containsOnlySpecialChars(text)) {
-    self.postMessage({ result: -1 });
+  if (!text || text.trim().length === 0) {
+    self.postMessage({ result: text }); // Jeśli pusty, zwróć to samo
     return;
   }
 
@@ -61,11 +35,6 @@ self.onmessage = async function (event) {
             ),
             match.replacements[0].value
           );
-          hasCorrections.push(true);
-        } else if (
-          match.shortMessage ===
-          "Przyimek wymaga biernika, dopełniacza lub narzędnika"
-        ) {
           hasCorrections.push(true);
         } else hasCorrections.push(false);
       });

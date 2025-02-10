@@ -277,25 +277,10 @@ export default function App() {
         protein: Math.ceil(dataOutput.protein * 100) / 100,
       };
 
-      // handleAddKcalItems(newKcalItem);
-      // setContainerHeight(container.offsetHeight + "px");
-      // setFoodItems([]);
-      // setLoading(false);
-      // setTimeout(() => {
-      //   setContainerHeight("auto");
-      // }, 270);
-      // setShowKcalButtons(true);
-      // if (kcalItems.length) setShowKcalButtons(false);
-      // setTimeout(() => {
-      //   setShowKcalButtons(true);
-      // }, 1);
-
+      handleAddKcalItems(newKcalItem);
+      setContainerHeight(container.offsetHeight + "px");
       setFoodItems([]);
       setLoading(false);
-      setTimeout(() => {
-        handleAddKcalItems(newKcalItem);
-        setContainerHeight(container.offsetHeight + "px");
-      }, 170);
       setTimeout(() => {
         setContainerHeight("auto");
       }, 270);
