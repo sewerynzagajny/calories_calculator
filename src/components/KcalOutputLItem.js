@@ -88,7 +88,8 @@ export default function KcalOutputLItem({
       }
     };
 
-    updateHeight();
+    // updateHeight();
+    setTimeout(updateHeight, 100); // Dodaj opóźnienie, aby uniknąć błędu związane z animacją
 
     window.addEventListener("resize", updateHeight); // Dodaj nasłuchiwanie na zdarzenie zmiany rozmiaru
     const currentElement = elementRef.current;

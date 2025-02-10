@@ -19,7 +19,6 @@ export default function KcalOutputList({
   onShowTotal,
   showKcalDetails,
   setShowKcalDetails,
-  delayedVisibilityKcal,
 }) {
   const prevFoodItemsLength = useRef(foodItems.length);
   const prevKcalItemsLength = useRef(kcalItems.length);
@@ -79,69 +78,67 @@ export default function KcalOutputList({
   }, [dataLoaded]);
 
   return (
-    delayedVisibilityKcal && (
-      <div className="kcal__items">
+    <div className="kcal__items">
+      <div
+        className="kcal__items__kcal-list"
+        style={{ height: containerKcalHeight }}
+      >
         <div
-          className="kcal__items__kcal-list"
-          style={{ height: containerKcalHeight }}
+          ref={elementRef}
+          className={`kcal__items__kcal-list--list ${
+            hasSelectedKcalItem ? "has-selected-item" : ""
+          }`}
         >
-          <div
-            ref={elementRef}
-            className={`kcal__items__kcal-list--list ${
-              hasSelectedKcalItem ? "has-selected-item" : ""
-            }`}
-          >
-            {kcalItems
-              .map((kcalItem) => (
-                <KcalOutputLItem
-                  kcalItem={kcalItem}
-                  key={kcalItem.id}
-                  selectedKcalItemId={selectedKcalItemId}
-                  onSelectedKcalItem={onSelectedKcalItem}
-                  cursorPosition={cursorPosition}
-                  onCursorPosition={onCursorPosition}
-                  onDeleteKcalItem={onDeleteKcalItem}
-                  setShowKcalButtons={setShowKcalButtons}
-                  loading={loading}
-                  kcalItems={kcalItems}
-                  showKcalDetails={showKcalDetails}
-                  setShowKcalDetails={setShowKcalDetails}
-                />
-              ))
-              .reverse()}
-          </div>
+          {kcalItems
+            .map((kcalItem) => (
+              <KcalOutputLItem
+                kcalItem={kcalItem}
+                key={kcalItem.id}
+                selectedKcalItemId={selectedKcalItemId}
+                onSelectedKcalItem={onSelectedKcalItem}
+                cursorPosition={cursorPosition}
+                onCursorPosition={onCursorPosition}
+                onDeleteKcalItem={onDeleteKcalItem}
+                setShowKcalButtons={setShowKcalButtons}
+                loading={loading}
+                kcalItems={kcalItems}
+                showKcalDetails={showKcalDetails}
+                setShowKcalDetails={setShowKcalDetails}
+              />
+            ))
+            .reverse()}
         </div>
-        {showKcalButtons && (
-          <div
-            className={`kcal__items__action ${
-              !kcalItems.length ? "move-out" : ""
-            }`}
-          >
-            <Button
-              style={{
-                animation: !showDelayedButton
-                  ? "moveInBotton 0.5s backwards ease-in-out"
-                  : "",
-              }}
-              onClick={onShowTotal}
-              loading={loading}
-            >
-              Suma
-            </Button>
-            <Button
-              style={{
-                animation: !showDelayedButton
-                  ? "moveInBotton 0.5s backwards ease-in-out"
-                  : "",
-              }}
-              onClick={onClearKcalList}
-              loading={loading}
-            >
-              Usuń listę kcal
-            </Button>
-          </div>
-        )}
       </div>
-    )
+      {showKcalButtons && (
+        <div
+          className={`kcal__items__action ${
+            !kcalItems.length ? "move-out" : ""
+          }`}
+        >
+          <Button
+            style={{
+              animation: !showDelayedButton
+                ? "moveInBotton 0.5s backwards ease-in-out"
+                : "",
+            }}
+            onClick={onShowTotal}
+            loading={loading}
+          >
+            Suma
+          </Button>
+          <Button
+            style={{
+              animation: !showDelayedButton
+                ? "moveInBotton 0.5s backwards ease-in-out"
+                : "",
+            }}
+            onClick={onClearKcalList}
+            loading={loading}
+          >
+            Usuń listę kcal
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

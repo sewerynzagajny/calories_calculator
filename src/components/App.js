@@ -11,8 +11,6 @@ import PopupTotal from "./PopupTotal";
 
 export default function App() {
   const [delayedVisibility, setDelayedVisibility] = useState(false);
-  const [delayedVisibilityKcal, setDelayedVisibilityKcal] = useState(true);
-
   const [foodItems, setFoodItems] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [showButtons, setShowButtons] = useState(false);
@@ -54,7 +52,6 @@ export default function App() {
   }
 
   function handleAddKcalItems(kcalItem) {
-    setDelayedVisibilityKcal(false);
     setKcalItems((kcalItems) => [...kcalItems, kcalItem]);
   }
 
@@ -280,17 +277,7 @@ export default function App() {
         protein: Math.ceil(dataOutput.protein * 100) / 100,
       };
 
-      // const newKcalItem = {
-      //   id,
-      //   food: foodItemString,
-      //   calories: 500,
-      //   fat: 15,
-      //   carbohydrates: 65,
-      //   protein: 20,
-      // };
-
       handleAddKcalItems(newKcalItem);
-      setDelayedVisibilityKcal(true);
       setContainerHeight(container.offsetHeight + "px");
       setFoodItems([]);
       setLoading(false);
@@ -432,7 +419,6 @@ export default function App() {
             onShowTotal={handleShowTotal}
             showKcalDetails={showKcalDetails}
             setShowKcalDetails={setShowKcalDetails}
-            delayedVisibilityKcal={delayedVisibilityKcal}
           />
           <Footer />
           {popupVisible && (
