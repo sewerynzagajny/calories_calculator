@@ -253,43 +253,43 @@ export default function App() {
     }
 
     try {
-      // const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
-      // const output = response.choices[0].message.content;
-      // console.log("Output:", output);
-      // if (output === "-1") {
-      //   wrongInput();
-      //   return;
-      // }
+      const response = await AJAX(apiURL, dataInput, "Bearer", apiKey);
+      const output = response.choices[0].message.content;
+      console.log("Output:", output);
+      if (output === "-1") {
+        wrongInput();
+        return;
+      }
 
-      // const dataOutput = JSON.parse(output);
-      // console.log("Data output:", dataOutput);
-      // if (
-      //   dataOutput.calories === -1 ||
-      //   dataOutput.protein === -1 ||
-      //   dataOutput.carbohydrates === -1 ||
-      //   dataOutput.fat === -1
-      // ) {
-      //   wrongInput();
-      //   return;
-      // }
+      const dataOutput = JSON.parse(output);
+      console.log("Data output:", dataOutput);
+      if (
+        dataOutput.calories === -1 ||
+        dataOutput.protein === -1 ||
+        dataOutput.carbohydrates === -1 ||
+        dataOutput.fat === -1
+      ) {
+        wrongInput();
+        return;
+      }
       const id = crypto.randomUUID();
-      // const newKcalItem = {
-      //   id,
-      //   food: foodItemString,
-      //   calories: Math.ceil(dataOutput.calories * 100) / 100,
-      //   fat: Math.ceil(dataOutput.fat * 100) / 100,
-      //   carbohydrates: Math.ceil(dataOutput.carbohydrates * 100) / 100,
-      //   protein: Math.ceil(dataOutput.protein * 100) / 100,
-      // };
-
       const newKcalItem = {
         id,
         food: foodItemString,
-        calories: 500,
-        fat: 15,
-        carbohydrates: 65,
-        protein: 20,
+        calories: Math.ceil(dataOutput.calories * 100) / 100,
+        fat: Math.ceil(dataOutput.fat * 100) / 100,
+        carbohydrates: Math.ceil(dataOutput.carbohydrates * 100) / 100,
+        protein: Math.ceil(dataOutput.protein * 100) / 100,
       };
+
+      // const newKcalItem = {
+      //   id,
+      //   food: foodItemString,
+      //   calories: 500,
+      //   fat: 15,
+      //   carbohydrates: 65,
+      //   protein: 20,
+      // };
 
       handleAddKcalItems(newKcalItem);
       setContainerHeight(container.offsetHeight + "px");
