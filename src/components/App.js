@@ -11,7 +11,7 @@ import PopupTotal from "./PopupTotal";
 
 export default function App() {
   const [delayedVisibility, setDelayedVisibility] = useState(false);
-  const [delayedVisibilityKcal, setDelayedVisibilityKcal] = useState(false);
+  const [delayedVisibilityKcal, setDelayedVisibilityKcal] = useState(true);
 
   const [foodItems, setFoodItems] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -287,7 +287,7 @@ export default function App() {
       //   carbohydrates: 65,
       //   protein: 20,
       // };
-
+      setDelayedVisibilityKcal(false);
       handleAddKcalItems(newKcalItem);
       setDelayedVisibilityKcal(true);
       setContainerHeight(container.offsetHeight + "px");
