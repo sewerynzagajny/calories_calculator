@@ -53,6 +53,13 @@ export default function App() {
 
   function handleAddKcalItems(kcalItem) {
     setKcalItems((kcalItems) => [...kcalItems, kcalItem]);
+    setTimeout(() => {
+      const container = document.querySelector(".kcal__items__kcal-list");
+      setContainerKcalHeight(container.offsetHeight + "px");
+      setTimeout(() => {
+        setContainerKcalHeight("auto");
+      }, 270);
+    }, 100); // Dodaj opóźnienie 100ms przed ustawieniem wysokości
   }
 
   function handleUpdateItem(updatedItem) {
@@ -225,7 +232,6 @@ export default function App() {
       .map((item) => `${item.food}: ${item.quantity} ${item.unit}`)
       .join("; ")
       .trim();
-    // const estimateText = `Oszacuj razem kaloryczność i makroskładniki dla: ${foodItemString}. Odpowiedz tylko w JSON {calories, protein, fat, carbohydrates}, bez komentarzy, sugestii. Jeśli co najmniej jeden składnik jest niejasny, nie nadaje się do spożycia, odpowiedz -1.`;
     const estimateText = `Oszacuj razem kaloryczność i makroskładniki dla: ${foodItemString}. Odpowiedz tylko w JSON {calories, protein, fat, carbohydrates}, bez komentarzy, sugestii. Jeśli co najmniej jeden składnik nie nadaje się do spożycia, odpowiedz -1.`;
 
     const dataInput = {
