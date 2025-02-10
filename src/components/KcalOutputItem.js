@@ -105,7 +105,7 @@ export default function KcalOutputLItem({
     const element = elementRef.current;
     if (element) {
       // Wymuś reflow
-      void element.offsetHeight;
+      element.getBoundingClientRect();
       element.classList.add("initial-position");
       setTimeout(() => {
         element.classList.remove("initial-position");
