@@ -101,18 +101,6 @@ export default function KcalOutputLItem({
     };
   }, []);
 
-  useEffect(() => {
-    const element = elementRef.current;
-    if (element) {
-      // Wymuś reflow
-      element.getBoundingClientRect();
-      element.classList.add("initial-position");
-      setTimeout(() => {
-        element.classList.remove("initial-position");
-      }, 50);
-    }
-  }, [kcalItems]);
-
   return (
     <div className="kcal">
       <div className={`kcal__icon ${isKcalSelected ? "selected" : ""}`}>
