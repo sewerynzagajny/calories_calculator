@@ -54,6 +54,7 @@ export default function App() {
   }
 
   function handleAddKcalItems(kcalItem) {
+    setDelayedVisibilityKcal(false);
     setKcalItems((kcalItems) => [...kcalItems, kcalItem]);
   }
 
@@ -287,7 +288,6 @@ export default function App() {
       //   carbohydrates: 65,
       //   protein: 20,
       // };
-      setDelayedVisibilityKcal(false);
       handleAddKcalItems(newKcalItem);
       setDelayedVisibilityKcal(true);
       setContainerHeight(container.offsetHeight + "px");
