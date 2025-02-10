@@ -54,7 +54,7 @@ export default function App() {
   }
 
   function handleAddKcalItems(kcalItem) {
-    setDelayedVisibility(false);
+    setDelayedVisibilityKcal(false);
     setKcalItems((kcalItems) => [...kcalItems, kcalItem]);
   }
 
