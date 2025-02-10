@@ -12,6 +12,7 @@ export default function KcalOutputLItem({
   kcalItems,
   showKcalDetails,
   setShowKcalDetails,
+  delayedVisibilityKcal,
 }) {
   const isKcalSelected = selectedKcalItemId === kcalItem.id;
   const isKcalDetailsSelected = showKcalDetails[kcalItem.id];
@@ -92,86 +93,94 @@ export default function KcalOutputLItem({
 
     window.addEventListener("resize", updateHeight); // Dodaj nasłuchiwanie na zdarzenie zmiany rozmiaru
     const currentElement = elementRef.current;
-    currentElement.addEventListener("transitionend", updateHeight); // Dodaj nasłuchiwanie na zdarzenie zakończenia animacji
+    if (currentElement) {
+      currentElement.addEventListener("transitionend", updateHeight); // Dodaj nasłuchiwanie na zdarzenie zakończenia animacji
+    }
 
     return () => {
       window.removeEventListener("resize", updateHeight); // Usuń nasłuchiwanie przy odmontowaniu komponentu
-      currentElement.removeEventListener("transitionend", updateHeight); // Usuń nasłuchiwanie przy odmontowaniu komponentu
+      if (currentElement) {
+        currentElement.removeEventListener("transitionend", updateHeight); // Usuń nasłuchiwanie przy odmontowaniu komponentu
+      } // Usuń nasłuchiwanie przy odmontowaniu komponentu
     };
   }, []);
 
   return (
-    <div className="kcal">
-      <div className={`kcal__icon ${isKcalSelected ? "selected" : ""}`}>
-        {/* {isKcalDetailsSelected ? "▼" : "▲"} */}
-        <span
-          className={isKcalDetailsSelected ? "rotate-270" : "rotate-90"}
-          onClick={handleToggleKcalDetails}
-        >
-          {">"}
-        </span>
-      </div>
-      <ul>
-        <li className={`kcal__item ${isKcalSelected ? "selected" : ""}`}>
-          <ul
-            ref={elementRef}
-            onClick={!loading ? handleClickKcalItem : null}
-            className={`kcal__details ${
-              !isKcalDetailsSelected
-                ? "kcal__details--expanded"
-                : "kcal__details--collapsed"
-            }`}
+    delayedVisibilityKcal && (
+      <div className="kcal">
+        <div className={`kcal__icon ${isKcalSelected ? "selected" : ""}`}>
+          {/* {isKcalDetailsSelected ? "▼" : "▲"} */}
+          <span
+            className={isKcalDetailsSelected ? "rotate-270" : "rotate-90"}
+            onClick={handleToggleKcalDetails}
           >
-            <li>
-              <span ref={kcalItemRef} className="kcal__item__food">
-                {kcalItem.food}
-              </span>
-            </li>
-            <li>
-              <span className="kcal__item__food">
-                {" "}
-                Kalorie:{" "}
-                <span className="kcal__item__value">
-                  {kcalItem.calories} kcal
-                </span>
-              </span>
-            </li>
-            <li>
-              <span className="kcal__item__food">
-                Tłuszcze:{" "}
-                <span className="kcal__item__value">{kcalItem.fat} g</span>
-              </span>
-            </li>
-            <li>
-              <span className="kcal__item__food">
-                Węglowodany:{" "}
-                <span className="kcal__item__value">
-                  {kcalItem.carbohydrates} g
-                </span>
-              </span>
-            </li>
-            <li>
-              <span className="kcal__item__food">
-                Białko:{" "}
-                <span className="kcal__item__value">{kcalItem.protein} g</span>
-              </span>
-            </li>
-          </ul>
-          {isKcalSelected && (
-            <div
-              className="kcal__item__btn"
-              style={{ top: cursorPosition.y, left: cursorPosition.x }}
+            {">"}
+          </span>
+        </div>
+        <ul>
+          <li className={`kcal__item ${isKcalSelected ? "selected" : ""}`}>
+            <ul
+              ref={elementRef}
+              onClick={!loading ? handleClickKcalItem : null}
+              className={`kcal__details ${
+                !isKcalDetailsSelected
+                  ? "kcal__details--expanded"
+                  : "kcal__details--collapsed"
+              }`}
             >
-              <button
-                className="kcal__item__btn--action"
-                onClick={handleDeleteKcalItemEffect}
+              <li>
+                <span ref={kcalItemRef} className="kcal__item__food">
+                  {kcalItem.food}
+                </span>
+              </li>
+              <li>
+                <span className="kcal__item__food">
+                  {" "}
+                  Kalorie:{" "}
+                  <span className="kcal__item__value">
+                    {kcalItem.calories} kcal
+                  </span>
+                </span>
+              </li>
+              <li>
+                <span className="kcal__item__food">
+                  Tłuszcze:{" "}
+                  <span className="kcal__item__value">{kcalItem.fat} g</span>
+                </span>
+              </li>
+              <li>
+                <span className="kcal__item__food">
+                  Węglowodany:{" "}
+                  <span className="kcal__item__value">
+                    {kcalItem.carbohydrates} g
+                  </span>
+                </span>
+              </li>
+              <li>
+                <span className="kcal__item__food">
+                  Białko:{" "}
+                  <span className="kcal__item__value">
+                    {kcalItem.protein} g
+                  </span>
+                </span>
+              </li>
+            </ul>
+            {isKcalSelected && (
+              <div
+                className="kcal__item__btn"
+                style={{ top: cursorPosition.y, left: cursorPosition.x }}
               >
-                Usuń
-              </button>
-            </div>
-          )}
-        </li>
-      </ul>
-    </div>
+                <button
+                  className="kcal__item__btn--action"
+                  onClick={handleDeleteKcalItemEffect}
+                >
+                  Usuń
+                </button>
+              </div>
+            )}
+          </li>
+        </ul>
+      </div>
+    )
   );
 }

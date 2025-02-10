@@ -19,6 +19,7 @@ export default function KcalOutputList({
   onShowTotal,
   showKcalDetails,
   setShowKcalDetails,
+  delayedVisibilityKcal,
 }) {
   const prevFoodItemsLength = useRef(foodItems.length);
   const prevKcalItemsLength = useRef(kcalItems.length);
@@ -104,6 +105,7 @@ export default function KcalOutputList({
                 kcalItems={kcalItems}
                 showKcalDetails={showKcalDetails}
                 setShowKcalDetails={setShowKcalDetails}
+                delayedVisibilityKcal={delayedVisibilityKcal}
               />
             ))
             .reverse()}
